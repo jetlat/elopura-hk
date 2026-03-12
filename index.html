@@ -2535,6 +2535,10 @@ async function loadData() {
     } catch (err) {
         console.error('getAll failed:', err);
         toast('Load failed — check connection', true);
+        document.body.insertAdjacentHTML('beforeend',
+            `<div style="position:fixed;bottom:0;left:0;right:0;background:#ff4060;color:white;
+            padding:12px;font-size:12px;z-index:99999;word-break:break-all;">
+            ITEMS ERROR: ${err.message}</div>`);
         const cached = localStorage.getItem('eq_requests');
         if (cached) requests = JSON.parse(cached);
         else { items = []; requests = {}; }
