@@ -4246,21 +4246,18 @@ function printDailyChecklist() {
     const levels    = [1, 2, 3, 4];
     const pubArea   = 'public';
 
-    // Gather requests per level
+    // Gather requests per level — requests is keyed by level: requests['1'], requests['2'] etc.
     const getReqs = (lvl) => {
-        const key = Object.keys(requests).find(k => {
-            const r = requests[k];
-            return r.date === new Date().toISOString().slice(0,10) && String(r.level) === String(lvl);
-        });
-        return key ? requests[key] : null;
+        const key = String(lvl);
+        return requests[key] || null;
     };
 
-    const levelRunner = { 1:'MIMIE', 2:'YANA', 3:'LINA', 4:'MIMIE', public:'IZZAT' };
+    // Pull actual runner from requests, fallback to '—' if no request yet
     const allLevels = [...levels, pubArea];
 
     const makeRequestTable = (lvl) => {
         const req = getReqs(lvl);
-        const runner = req?.runner || levelRunner[lvl] || '–';
+        const runner = req?.runner || '—';
         const its = req?.items || [];
         const rows = Array(8).fill(null).map((_, i) => its[i] || null);
         return `
