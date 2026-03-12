@@ -1779,6 +1779,7 @@
             <!-- Populated dynamically from Google Sheet -->
         </div>
         <button class="continue-btn" id="continueBtn" disabled onclick="goToPin()">Continue</button>
+        <button onclick="hardReset()" style="margin-top:10px;width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text-muted);font-family:inherit;font-size:13px;cursor:pointer;">🔄 Force Refresh Data</button>
     </div>
 </div>
 
@@ -2262,7 +2263,11 @@ async function loadStaff() {
             color: AVATAR_COLORS[i % AVATAR_COLORS.length],
         }));
     } catch (e) {
-        console.warn('Staff load failed, using demo', e);
+        console.warn('Staff load failed', e);
+        document.body.insertAdjacentHTML('beforeend',
+            `<div style="position:fixed;top:0;left:0;right:0;background:#ff4060;color:white;
+            padding:12px;font-size:12px;z-index:99999;word-break:break-all;">
+            ERROR: ${e.message}</div>`);
         staffList = DEMO_STAFF.map((s, i) => ({ ...s, color: AVATAR_COLORS[i % AVATAR_COLORS.length] }));
     }
 }
@@ -3207,6 +3212,12 @@ function switchTab(name) {
 // =============================================
 // SYNC
 // =============================================
+function hardReset() {
+    localStorage.clear();
+    toast('Cache cleared — reloading…');
+    setTimeout(() => location.reload(), 800);
+}
+
 function saveLocal() { localStorage.setItem('eq_requests', JSON.stringify(requests)); }
 
 async function syncNow() {
