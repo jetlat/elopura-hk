@@ -2625,6 +2625,10 @@ function miniAvatar(name) {
 }
 
 function renderLevels() {
+    // Remember which cards are currently open before re-render
+    const openLevels = new Set();
+    document.querySelectorAll('.level-card.open').forEach(el => openLevels.add(el.dataset.level));
+
     document.getElementById('levelsList').innerHTML = LEVELS.map(lv => {
         const data    = requests[lv.key] || { runner:'', items:[] };
         const total   = data.items.length;
@@ -2634,7 +2638,7 @@ function renderLevels() {
         const chip    = data.runner ? miniAvatar(data.runner) : '';
 
         return `
-        <div class="level-card" data-level="${lv.key}">
+        <div class="level-card ${openLevels.has(lv.key) ? 'open' : ''}" data-level="${lv.key}">
             <div class="level-header" onclick="toggleCard('${lv.key}')">
                 <div class="level-info">
                     <div class="level-badge-wrap">
