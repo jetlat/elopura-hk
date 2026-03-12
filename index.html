@@ -2215,8 +2215,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save the hardcoded URL so sync functions pick it up
     localStorage.setItem('eq_script_url', CFG.SCRIPT_URL);
 
-    // Load staff + data in parallel so items are ready by the time user logs in
-    Promise.all([loadStaff(), loadData()]).then(() => {
+    // Load staff first, then show login
+    loadStaff().then(() => {
         if (savedUser && savedRole) {
             const staff = staffList.find(s => s.name === savedUser);
             if (staff) { loginAs(staff); return; }
@@ -2514,6 +2514,7 @@ function confirmLogout() {
 // =============================================
 async function loadData() {
     showLoading(true);
+    const loadingTimeout = setTimeout(() => showLoading(false), 10000); // safety fallback
 
     if (CFG.DEMO) {
         items    = DEMO_ITEMS;
@@ -2554,12 +2555,16 @@ async function loadData() {
         // non-fatal — checklist just stays empty
     }
 
-    afterLoad();
-    saveLocal();
-    const now = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-    document.getElementById('syncText').textContent = `Synced ${now}`;
-    toast('Data synced ✓');
+    try { afterLoad(); } catch(e) { console.warn('afterLoad error', e); }
+    try { saveLocal(); } catch(e) {}
+    try {
+        const now = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+        const st = document.getElementById('syncText');
+        if (st) st.textContent = `Synced ${now}`;
+        toast('Data synced ✓');
+    } catch(e) {}
 
+    clearTimeout(loadingTimeout);
     showLoading(false);
 }
 
