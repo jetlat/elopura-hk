@@ -1,0 +1,4352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Elopura HK">
+    <!-- Force browsers and CDN not to cache this page -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Elopura HK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-base: #080810;
+            --bg-elevated: #10101a;
+            --bg-card: #171724;
+            --bg-card-hover: #1e1e2e;
+            --accent: #00e5b8;
+            --accent-dim: rgba(0,229,184,0.12);
+            --accent-glow: rgba(0,229,184,0.35);
+            --accent2: #7c5cfc;
+            --text: #f0f0f8;
+            --text-secondary: #a0a0c0;
+            --text-muted: #7070a0;
+            --danger: #ff4060;
+            --warning: #ffaa00;
+            --success: #00e096;
+            --l1: #ff6b8a;
+            --l2: #a55eea;
+            --l3: #45aaf2;
+            --l4: #26de81;
+            --lp: #fed330;
+            --radius-xl: 24px;
+            --radius-lg: 18px;
+            --radius: 13px;
+            --radius-sm: 9px;
+        }
+
+        html, body {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            background: var(--bg-base);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .hidden { display: none !important; }
+
+        /* ==============================
+           SETUP SCREEN
+        ============================== */
+        #setupScreen {
+            position: fixed; inset: 0; z-index: 3000;
+            background: var(--bg-base);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 32px 24px;
+        }
+
+        .setup-icon {
+            width: 76px; height: 76px;
+            background: linear-gradient(135deg, var(--accent), #00b894);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 34px; font-weight: 700; color: var(--bg-base);
+            margin-bottom: 24px;
+            box-shadow: 0 8px 48px var(--accent-glow);
+        }
+        .setup-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .setup-desc { font-size: 15px; color: var(--text-secondary); text-align: center; margin-bottom: 32px; max-width: 290px; line-height: 1.6; }
+
+        .setup-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            width: 100%; max-width: 360px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .setup-label { font-size: 15px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+        .setup-input {
+            width: 100%; padding: 14px 16px;
+            background: var(--bg-elevated);
+            border: 1.5px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            transition: border-color 0.2s;
+            margin-bottom: 16px;
+        }
+        .setup-input:focus { outline: none; border-color: var(--accent); }
+        .setup-input::placeholder { color: var(--text-muted); }
+
+        .btn-accent {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, var(--accent), #00c9a0);
+            border: none; border-radius: var(--radius);
+            color: var(--bg-base);
+            font-family: inherit; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+            letter-spacing: 0.3px;
+        }
+        .btn-accent:active { transform: scale(0.97); }
+        .btn-ghost {
+            width: 100%; padding: 14px;
+            background: transparent;
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            font-family: inherit; font-size: 15px; font-weight: 500;
+            cursor: pointer; margin-top: 10px; transition: border-color 0.2s;
+        }
+        .btn-ghost:active { border-color: var(--text-muted); }
+
+        /* ==============================
+           LOGIN SCREEN — STEP 1: Pick name
+        ============================== */
+        #loginScreen {
+            position: fixed; inset: 0; z-index: 2000;
+            background: var(--bg-base);
+            display: flex; flex-direction: column;
+            align-items: center;
+            padding: 0 20px 32px;
+            overflow-y: auto;
+        }
+
+        .login-hero {
+            width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 52px 0 32px;
+            position: relative;
+        }
+
+        /* Glowing orb behind logo */
+        .login-hero::before {
+            content: '';
+            position: absolute;
+            top: 20px; left: 50%;
+            transform: translateX(-50%);
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(0,229,184,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .login-logo {
+            width: 84px; height: 84px;
+            background: linear-gradient(135deg, var(--accent), #00b894);
+            border-radius: 28px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 30px;
+            color: var(--bg-base);
+            margin-bottom: 18px;
+            box-shadow: 0 12px 56px var(--accent-glow);
+            animation: floatLogo 4s ease-in-out infinite;
+            position: relative; z-index: 1;
+        }
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .login-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+        .login-subtitle { font-size: 15px; color: var(--text-secondary); margin-top: 4px; }
+
+        .login-card {
+            width: 100%; max-width: 400px;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .login-section-label {
+            font-size: 15px; font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1.2px;
+            margin-bottom: 14px; display: block;
+        }
+
+        /* Staff grid: 3 columns for runners, supervisor full width */
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .staff-btn {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 9px; padding: 16px 8px 14px;
+            background: var(--bg-elevated);
+            border: 1.5px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius-lg);
+            color: var(--text);
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .staff-btn:active { transform: scale(0.94); }
+        .staff-btn.selected {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+        .staff-btn.selected .avatar-ring {
+            box-shadow: 0 0 0 3px var(--accent), 0 4px 20px var(--accent-glow);
+        }
+        .staff-btn.sv-btn.selected .avatar-ring {
+            box-shadow: 0 0 0 3px var(--accent2), 0 4px 20px rgba(124,92,252,0.4);
+        }
+
+        /* Avatar circle with photo placeholder */
+        .avatar-ring {
+            width: 58px; height: 58px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--bg-elevated);
+            flex-shrink: 0;
+            transition: box-shadow 0.2s;
+            border: 2px solid rgba(255,255,255,0.08);
+            position: relative;
+        }
+        .avatar-ring img {
+            width: 100%; height: 100%;
+            object-fit: cover; display: block;
+        }
+        .avatar-fallback {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 700;
+            color: white;
+        }
+        /* No-photo placeholder shows a soft person icon */
+        .avatar-placeholder {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 1px;
+            background: var(--bg-card);
+        }
+        .avatar-placeholder .ph-head {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+        }
+        .avatar-placeholder .ph-body {
+            width: 28px; height: 14px;
+            border-radius: 14px 14px 0 0;
+            background: rgba(255,255,255,0.1);
+            margin-top: 2px;
+        }
+
+        .continue-btn {
+            width: 100%; padding: 18px;
+            background: linear-gradient(135deg, var(--accent), #00c9a0);
+            border: none; border-radius: var(--radius);
+            color: var(--bg-base);
+            font-family: inherit; font-size: 16px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .continue-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .continue-btn:not(:disabled):active { transform: scale(0.97); }
+
+        /* ==============================
+           PIN SCREEN — STEP 2
+        ============================== */
+        #pinScreen {
+            position: fixed; inset: 0; z-index: 2500;
+            background: var(--bg-base);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 32px 24px;
+        }
+
+        .pin-preview {
+            display: flex; flex-direction: column; align-items: center;
+            margin-bottom: 32px; gap: 12px;
+        }
+        .pin-avatar-wrap {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 32px var(--accent-glow);
+            animation: pulseRing 2s ease-in-out infinite;
+        }
+        @keyframes pulseRing {
+            0%, 100% { box-shadow: 0 0 32px var(--accent-glow); }
+            50% { box-shadow: 0 0 48px rgba(0,229,184,0.5); }
+        }
+        .pin-avatar-wrap.sv { border-color: var(--accent2); box-shadow: 0 0 32px rgba(124,92,252,0.4); }
+        .pin-avatar-wrap.sv { animation: pulseRingSv 2s ease-in-out infinite; }
+        @keyframes pulseRingSv {
+            0%, 100% { box-shadow: 0 0 32px rgba(124,92,252,0.4); }
+            50% { box-shadow: 0 0 48px rgba(124,92,252,0.6); }
+        }
+        .pin-avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .pin-avatar-fallback { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: white; }
+        .pin-user-name { font-size: 22px; font-weight: 700; }
+        .pin-role-pill {
+            font-size: 15px; font-weight: 600; padding: 5px 14px;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.8px;
+        }
+        .pin-role-pill.staff      { background: var(--accent-dim); color: var(--accent); }
+        .pin-role-pill.supervisor { background: rgba(124,92,252,0.15); color: var(--accent2); }
+
+        .pin-prompt { font-size: 15px; color: var(--text-secondary); margin-bottom: 24px; }
+
+        /* PIN dot indicators */
+        .pin-dots {
+            display: flex; gap: 16px; margin-bottom: 36px;
+        }
+        .pin-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pin-dot.filled {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
+            transform: scale(1.15);
+        }
+        .pin-dot.filled.sv-fill {
+            background: var(--accent2);
+            border-color: var(--accent2);
+            box-shadow: 0 0 12px rgba(124,92,252,0.5);
+        }
+        .pin-dot.error { animation: dotShake 0.4s ease; }
+        @keyframes dotShake {
+            0%,100% { transform: translateX(0); }
+            15% { transform: translateX(-8px); }
+            30% { transform: translateX(8px); }
+            50% { transform: translateX(-5px); }
+            70% { transform: translateX(5px); }
+        }
+
+        /* Number pad */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 13px;
+            width: 100%; max-width: 300px;
+        }
+        .numpad-key {
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius-lg);
+            color: var(--text);
+            font-family: inherit; font-size: 24px; font-weight: 500;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.1s;
+            user-select: none;
+        }
+        .numpad-key:active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            transform: scale(0.91);
+        }
+        .numpad-key.key-del { font-size: 20px; color: var(--text-secondary); }
+        .numpad-key.key-empty { visibility: hidden; pointer-events: none; }
+
+        .pin-error {
+            font-size: 15px; color: var(--danger);
+            margin-top: 16px; min-height: 20px;
+            text-align: center;
+        }
+        .pin-back {
+            margin-top: 20px; padding: 10px 20px;
+            background: transparent; border: none;
+            color: var(--text-muted); font-family: inherit; font-size: 15px;
+            cursor: pointer;
+        }
+        .pin-back:active { color: var(--text-secondary); }
+
+        /* ==============================
+           APP CONTAINER
+        ============================== */
+        #app { display: none; }
+        #app.active { display: block; }
+
+        /* ==============================
+           HEADER
+        ============================== */
+        .header {
+            background: linear-gradient(180deg, var(--bg-elevated) 0%, transparent 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 16px 18px 14px;
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 14px;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--accent), #00b894);
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 15px; color: var(--bg-base);
+        }
+        .logo-text { font-size: 19px; font-weight: 700; letter-spacing: -0.5px; }
+        .logo-text span { color: var(--accent); }
+
+        .header-right { display: flex; align-items: center; gap: 8px; }
+
+        .date-chip {
+            background: var(--bg-card);
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px; color: var(--text-secondary);
+        }
+
+        /* User pill with circular avatar */
+        .user-pill {
+            display: flex; align-items: center; gap: 7px;
+            background: var(--accent-dim);
+            border: 1px solid rgba(0,229,184,0.2);
+            padding: 5px 12px 5px 5px;
+            border-radius: 24px;
+            cursor: pointer; border-width: 0;
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            color: var(--accent);
+            transition: background 0.15s;
+        }
+        .user-pill:active { background: rgba(0,229,184,0.2); }
+        .user-pill-avatar {
+            width: 28px; height: 28px;
+            border-radius: 50%; overflow: hidden;
+            background: var(--bg-card); flex-shrink: 0;
+        }
+        .user-pill-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-pill-avatar .avatar-fallback { font-size: 15px; }
+
+        /* ==============================
+           HOME SCREEN (nav tiles)
+        ============================== */
+        /* ==============================
+           HOME SCREEN — BENTO
+        ============================== */
+        #homeScreen {
+            display: none;
+            padding: 0 0 110px;
+        }
+        #homeScreen.active { display: block; }
+
+        .home-hero {
+            padding: 24px 18px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .home-greeting {
+            font-size: 24px; font-weight: 800; line-height: 1.2;
+            letter-spacing: -0.3px;
+        }
+        .home-greeting span { color: var(--accent); }
+        .home-date {
+            font-size: 13px; color: var(--text-muted); margin-top: 5px;
+            font-family: 'JetBrains Mono', monospace; letter-spacing: 0.3px;
+        }
+        .home-avatar-wrap {
+            width: 46px; height: 46px;
+            border-radius: 50%; overflow: hidden;
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .home-avatar-wrap img { width:100%; height:100%; object-fit:cover; }
+        .home-avatar-wrap .avatar-fallback { font-size: 17px; }
+
+        /* ── Bento grid ── */
+        .home-tiles {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: auto;
+            gap: 10px;
+            padding: 6px 14px 10px;
+        }
+
+        /* Base bento cell */
+        .home-tile {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 22px;
+            padding: 20px 18px 18px;
+            cursor: pointer;
+            transition: transform 0.18s, box-shadow 0.18s;
+            position: relative; overflow: hidden;
+            text-align: left;
+            font-family: inherit;
+            display: flex; flex-direction: column; gap: 0;
+            min-height: 120px;
+        }
+        .home-tile:active { transform: scale(0.96); }
+
+        /* Glow blob behind each tile */
+        .home-tile::after {
+            content: '';
+            position: absolute;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            filter: blur(28px);
+            bottom: -20px; right: -20px;
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        /* Wide tile spans full width */
+        .home-tile.tile-wide {
+            grid-column: 1 / -1;
+            min-height: 100px;
+            flex-direction: row;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Icon */
+        .tile-icon-wrap {
+            font-size: 28px; line-height: 1;
+            margin-bottom: 10px;
+        }
+        .home-tile.tile-wide .tile-icon-wrap {
+            font-size: 32px; margin-bottom: 0; flex-shrink: 0;
+        }
+
+        /* Text */
+        .tile-text { flex: 1; }
+        .tile-title {
+            font-size: 16px; font-weight: 800; color: var(--text);
+            margin-bottom: 3px; letter-spacing: -0.2px;
+        }
+        .tile-desc {
+            font-size: 12px; color: var(--text-muted); line-height: 1.4;
+        }
+        .home-tile.tile-wide .tile-title { font-size: 17px; }
+
+        /* Notification badge */
+        .tile-badge {
+            position: absolute; top: 12px; right: 12px;
+            background: var(--danger);
+            color: white; font-size: 11px; font-weight: 800;
+            min-width: 20px; height: 20px; padding: 0 5px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 0 10px rgba(255,64,96,0.5);
+        }
+        .tile-arrow { display: none; }
+
+        /* ── Per-tile accent colours & glows ── */
+        .home-tile.tile-overview {
+            background: linear-gradient(145deg, #0e1f1c 0%, #0a1614 100%);
+            border-color: rgba(0,229,184,0.18);
+        }
+        .home-tile.tile-overview::after { background: var(--accent); }
+        .home-tile.tile-overview .tile-title { color: var(--accent); }
+
+        .home-tile.tile-requests {
+            background: linear-gradient(145deg, #14102a 0%, #0d0a1e 100%);
+            border-color: rgba(124,92,252,0.2);
+        }
+        .home-tile.tile-requests::after { background: var(--accent2); }
+        .home-tile.tile-requests .tile-title { color: #9d7cff; }
+
+        .home-tile.tile-checklist {
+            background: linear-gradient(145deg, #0d1a2a 0%, #080f1a 100%);
+            border-color: rgba(69,170,242,0.2);
+        }
+        .home-tile.tile-checklist::after { background: #45aaf2; }
+        .home-tile.tile-checklist .tile-title { color: #45aaf2; }
+
+        .home-tile.tile-stock {
+            background: linear-gradient(145deg, #1e1800 0%, #141000 100%);
+            border-color: rgba(254,211,48,0.2);
+        }
+        .home-tile.tile-stock::after { background: var(--lp); }
+        .home-tile.tile-stock .tile-title { color: var(--lp); }
+
+        .home-tile.tile-staff {
+            background: linear-gradient(145deg, #1a1535 0%, #0e0d1f 100%);
+            border-color: rgba(147,102,255,0.18);
+        }
+        .home-tile.tile-staff::after { background: #9366ff; }
+        .home-tile.tile-staff .tile-title { color: #b08aff; }
+
+        .home-tile.tile-dashboard {
+            background: linear-gradient(145deg, #0a1825 0%, #060e17 100%);
+            border-color: rgba(69,170,242,0.15);
+        }
+        .home-tile.tile-dashboard::after { background: #45aaf2; }
+        .home-tile.tile-dashboard .tile-title { color: #6ec6ff; }
+
+        /* ==============================
+           SECTION BACK BUTTON
+        ============================== */
+        .section-back-bar {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px 8px;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+        .section-back-btn {
+            background: var(--bg-card);
+            border: none; border-radius: 10px;
+            width: 38px; height: 38px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: var(--text);
+            cursor: pointer; flex-shrink: 0;
+        }
+        .section-back-label {
+            font-size: 16px; font-weight: 600; color: var(--text-secondary);
+        }
+
+        /* ==============================
+           TABS — now hidden (nav via home tiles)
+        ============================== */
+        .tabs { display: none; }
+        .tab  { display: none; }
+
+        /* ==============================
+           MAIN CONTENT
+        ============================== */
+        .main { padding: 16px 16px 110px; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 13px; margin-top: 2px;
+        }
+        .section-title {
+            font-size: 15px; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1.2px;
+        }
+        .section-badge {
+            font-family: 'JetBrains Mono', monospace; font-size: 15px;
+            color: var(--text-muted); background: var(--bg-card);
+            padding: 3px 10px; border-radius: 10px;
+        }
+
+        /* ==============================
+           ALERT CARD
+        ============================== */
+        .alert-card {
+            background: linear-gradient(135deg, rgba(255,170,0,0.1), rgba(255,64,96,0.06));
+            border: 1px solid rgba(255,170,0,0.25);
+            border-radius: var(--radius-lg);
+            padding: 16px; margin-bottom: 18px;
+        }
+        .alert-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .alert-icon { width: 34px; height: 34px; background: rgba(255,170,0,0.15); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .alert-title { font-size: 15px; font-weight: 600; color: var(--warning); }
+        .alert-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .alert-item:last-child { border-bottom: none; }
+        .alert-item-name { font-size: 15px; }
+        .alert-item-qty { font-family: 'JetBrains Mono', monospace; font-size: 15px; padding: 3px 9px; border-radius: 7px; font-weight: 600; }
+        .alert-item-qty.critical { background: rgba(255,64,96,0.18); color: var(--danger); }
+        .alert-item-qty.low { background: rgba(255,170,0,0.18); color: var(--warning); }
+
+        /* ==============================
+           LEVEL CARDS
+        ============================== */
+        .level-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .level-header {
+            padding: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer;
+        }
+        .level-header:active { background: var(--bg-card-hover); }
+        .level-info { display: flex; align-items: center; gap: 13px; }
+        .level-badge-wrap { position: relative; }
+        .level-badge {
+            width: 46px; height: 46px;
+            border-radius: 13px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 15px; color: white;
+        }
+        .lb-l1 { background: linear-gradient(135deg, var(--l1), #e85571); }
+        .lb-l2 { background: linear-gradient(135deg, var(--l2), #8c44ce); }
+        .lb-l3 { background: linear-gradient(135deg, var(--l3), #2d98da); }
+        .lb-l4 { background: linear-gradient(135deg, var(--l4), #20bf6b); }
+        .lb-lp { background: linear-gradient(135deg, var(--lp), #f7b731); }
+
+        .notif-badge {
+            position: absolute; top: -5px; right: -5px;
+            min-width: 20px; height: 20px;
+            background: var(--danger);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 700; color: white;
+            padding: 0 5px;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 2px 8px rgba(255,64,96,0.45);
+            animation: popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        .notif-badge.all-done {
+            background: var(--success);
+            box-shadow: 0 2px 8px rgba(0,224,150,0.45);
+            font-size: 15px;
+        }
+        @keyframes popIn { 0%{transform:scale(0);} 70%{transform:scale(1.2);} 100%{transform:scale(1);} }
+        @keyframes spin   { to { transform: rotate(360deg); } }
+
+        .level-meta h3 { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+        .level-meta p { font-size: 15px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
+
+        /* Runner mini-avatar in level card */
+        .runner-chip {
+            width: 20px; height: 20px;
+            border-radius: 50%; overflow: hidden;
+            background: var(--bg-elevated);
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
+        }
+        .runner-chip img { width: 100%; height: 100%; object-fit: cover; }
+        .runner-chip-fallback { font-size: 8px; font-weight: 700; color: var(--text-secondary); }
+
+        .chevron {
+            width: 22px; height: 22px; color: var(--text-muted);
+            transition: transform 0.25s ease; flex-shrink: 0;
+        }
+        .level-card.open .chevron { transform: rotate(180deg); }
+
+        /* Item list */
+        .item-list {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease;
+            border-top: 0px solid rgba(255,255,255,0.04);
+        }
+        .level-card.open .item-list { max-height: 1200px; border-top-width: 1px; }
+
+        .item-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 13px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            transition: background 0.12s;
+        }
+        .item-row:last-child { border-bottom: none; }
+        .item-row.clickable { cursor: pointer; }
+        .item-row.clickable:active { background: var(--bg-card-hover); }
+
+        .item-check {
+            width: 24px; height: 24px;
+            border-radius: 7px; border: 2px solid var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.18s; flex-shrink: 0;
+        }
+        .item-row.done .item-check {
+            background: var(--accent); border-color: var(--accent);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+        .item-check svg { width: 12px; height: 12px; stroke: var(--bg-base); stroke-width: 3; opacity: 0; transform: scale(0.4); transition: all 0.18s; }
+        .item-row.done .item-check svg { opacity: 1; transform: scale(1); }
+        .item-check.readonly { opacity: 0.45; }
+
+        .item-info { flex: 1; min-width: 0; }
+        .item-name { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-row.done .item-name { color: var(--text-muted); text-decoration: line-through; }
+        .item-sub { font-size: 15px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+        .item-qty {
+            font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600;
+            color: var(--accent); background: var(--accent-dim);
+            padding: 5px 10px; border-radius: 7px; flex-shrink: 0;
+        }
+        .item-row.done .item-qty { color: var(--text-muted); background: rgba(255,255,255,0.04); }
+
+        .empty-state {
+            padding: 28px 16px; text-align: center;
+            color: var(--text-muted); font-size: 15px;
+        }
+        .empty-state .empty-icon { font-size: 28px; margin-bottom: 8px; opacity: 0.4; }
+
+        /* ==============================
+           FORM
+        ============================== */
+        .form-card {
+            background: var(--bg-card); border-radius: var(--radius-lg);
+            padding: 18px; margin-bottom: 18px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .form-group { margin-bottom: 14px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label { display: block; font-size: 15px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+        .form-select, .form-input {
+            width: 100%; padding: 13px 15px;
+            background: var(--bg-elevated);
+            border: 1.5px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius);
+            color: var(--text); font-family: inherit; font-size: 15px;
+            transition: border-color 0.2s; appearance: none;
+        }
+        .form-select:focus, .form-input:focus { outline: none; border-color: var(--accent); }
+        .select-wrap { position: relative; }
+        .select-wrap::after { content: ''; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); border: 5px solid transparent; border-top-color: var(--text-muted); pointer-events: none; }
+        .btn-submit {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, var(--accent), #00c9a0);
+            border: none; border-radius: var(--radius);
+            color: var(--bg-base); font-family: inherit; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: all 0.18s;
+        }
+        .btn-submit:active { transform: scale(0.97); }
+        .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        /* My requests */
+        .req-row {
+            background: var(--bg-card); border-radius: var(--radius);
+            padding: 13px 15px; margin-bottom: 9px;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: border-color 0.15s;
+        }
+        .req-row.req-done {
+            opacity: 0.55;
+            border-color: rgba(0,224,150,0.1);
+        }
+        .req-info { display: flex; align-items: center; gap: 11px; flex: 1; min-width: 0; }
+        .req-lvl { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: white; flex-shrink: 0; }
+        .req-text h4 { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .req-text p { font-size: 15px; color: var(--text-muted); }
+        .req-qty { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--accent); font-weight: 600; flex-shrink: 0; }
+        .req-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .req-btn {
+            width: 34px; height: 34px; border-radius: 9px; border: none;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; cursor: pointer; transition: all 0.15s;
+        }
+        .req-btn:active { transform: scale(0.9); }
+        .req-edit { background: rgba(0,229,184,0.1); }
+        .req-edit:active { background: rgba(0,229,184,0.2); }
+        .req-del  { background: rgba(255,64,96,0.1); }
+        .req-del:active  { background: rgba(255,64,96,0.2); }
+
+        .tile-staff  { background: linear-gradient(135deg, #1a1535 0%, #0e0d1f 100%); border-color: rgba(147,102,255,0.15); }
+        .tile-staff:hover { border-color: rgba(147,102,255,0.35); }
+        .tile-staff .tile-icon-wrap { background: rgba(147,102,255,0.15); color: #9366ff; }
+        .tile-dashboard { background: linear-gradient(135deg, #0d1f2d 0%, #081520 100%); border-color: rgba(69,170,242,0.15); }
+        .tile-dashboard:hover { border-color: rgba(69,170,242,0.35); }
+        .tile-dashboard .tile-icon-wrap { background: rgba(69,170,242,0.15); color: #45aaf2; }
+        .tile-dashboard .tile-arrow { color: #45aaf2; }
+
+        /* Staff management list */
+        .staff-mgmt-card {
+            background:var(--bg-card);border-radius:var(--radius-lg);
+            padding:14px 15px;margin-bottom:10px;
+            border:1px solid rgba(255,255,255,0.04);
+            display:flex;align-items:center;gap:13px;
+        }
+        .staff-mgmt-avatar {
+            width:44px;height:44px;border-radius:50%;overflow:hidden;
+            flex-shrink:0;background:var(--bg-elevated);
+            display:flex;align-items:center;justify-content:center;
+            font-size:16px;font-weight:700;color:white;
+        }
+        .staff-mgmt-avatar img { width:100%;height:100%;object-fit:cover; }
+        .staff-mgmt-info { flex:1;min-width:0; }
+        .staff-mgmt-name { font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+        .staff-mgmt-role { font-size:15px;font-weight:600;margin-top:2px; }
+        .staff-mgmt-role.sv { color:#f7c948; }
+        .staff-mgmt-role.st { color:var(--text-muted); }
+        .staff-mgmt-actions { display:flex;gap:7px;flex-shrink:0; }
+        .staff-mgmt-btn {
+            width:34px;height:34px;border-radius:9px;border:none;
+            display:flex;align-items:center;justify-content:center;
+            font-size:15px;cursor:pointer;transition:all 0.15s;
+        }
+        .staff-mgmt-btn:active { transform:scale(0.9); }
+        .smb-edit { background:rgba(0,229,184,0.1); }
+        .smb-del  { background:rgba(255,64,96,0.1); }
+
+        /* Role selector buttons */
+        .role-sel-btn {
+            flex:1;padding:12px;border-radius:var(--radius);border:1.5px solid rgba(255,255,255,0.07);
+            background:var(--bg-elevated);color:var(--text-secondary);
+            font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.15s;
+        }
+        .role-sel-btn.active {
+            border-color:var(--accent);color:var(--accent);
+            background:rgba(0,229,184,0.08);
+        }
+        .water-card {
+            background: linear-gradient(135deg, #111e35, #0d1928);
+            border-radius: var(--radius-lg); padding: 18px; margin-top: 8px;
+            border: 1px solid rgba(69,170,242,0.12);
+        }
+        .water-header { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+        .water-icon { width: 40px; height: 40px; background: rgba(69,170,242,0.15); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .water-title { font-size: 15px; font-weight: 600; }
+        .water-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+        .water-cell { background: rgba(0,0,0,0.2); border-radius: var(--radius); padding: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .water-cell-name { font-size: 15px; color: var(--text-secondary); }
+        .water-cell-qty { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; color: #45aaf2; }
+        .water-cell.total { grid-column: span 2; background: rgba(69,170,242,0.1); border: 1px solid rgba(69,170,242,0.2); }
+        .water-cell.total .water-cell-name { color: var(--text); font-weight: 600; font-size: 15px; }
+        .water-cell.total .water-cell-qty { font-size: 24px; }
+
+        /* Stock */
+        .stock-row {
+            background: var(--bg-card); border-radius: var(--radius);
+            padding: 13px 15px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .stock-info h4 { font-size: 15px; font-weight: 600; }
+        .stock-info p { font-size: 15px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+        /* ==============================
+           SYNC BAR
+        ============================== */
+        /* ==============================
+           DASHBOARD
+        ============================== */
+        /* ==============================
+           DASHBOARD v2
+        ============================== */
+        /* ── Dashboard Bento Grid ── */
+        .db-bento-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 6px 0 0;
+        }
+        .db-bento {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 16px 15px;
+            position: relative; overflow: hidden;
+        }
+        /* Subtle glow blob per card */
+        .db-bento::before {
+            content: '';
+            position: absolute;
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            filter: blur(40px);
+            bottom: -40px; right: -30px;
+            opacity: 0.12; pointer-events: none;
+            background: var(--accent);
+        }
+        .db-bento-wide   { grid-column: 1 / -1; }
+        .db-bento-full   { grid-column: 1 / -1; }
+        .db-bento-status { grid-column: span 1; }
+        .db-bento-exceptions::before { background: var(--danger); }
+        .db-bento-label {
+            font-size: 11px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        /* Floor Progress */
+        .db-floor-row {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 10px;
+        }
+        .db-floor-row:last-child { margin-bottom: 0; }
+        .db-floor-label {
+            width: 50px; font-size: 13px; font-weight: 700; flex-shrink: 0;
+        }
+        .db-floor-bar-wrap { flex: 1; }
+        .db-floor-bar-bg {
+            height: 8px; background: rgba(255,255,255,0.06);
+            border-radius: 4px; overflow: hidden; margin-bottom: 3px;
+        }
+        .db-floor-bar-fill {
+            height: 100%; border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+        .db-floor-stats { font-size: 12px; color: var(--text-secondary); display: flex; gap: 4px; align-items: center; }
+        .db-floor-pct {
+            width: 36px; text-align: right;
+            font-size: 13px; font-weight: 800;
+            font-family: 'JetBrains Mono', monospace; flex-shrink: 0;
+        }
+        /* Status chips */
+        .db-status-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .db-status-chip {
+            background: var(--bg-elevated); border-radius: var(--radius);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 8px 14px; text-align: center; min-width: 60px;
+        }
+        .db-status-num {
+            font-size: 22px; font-weight: 800;
+            font-family: 'JetBrains Mono', monospace; line-height: 1;
+        }
+        .db-status-lbl {
+            font-size: 11px; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px;
+        }
+        /* Staff rows */
+        .db-staff-row {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .db-staff-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .db-staff-avatar {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 700; color: white;
+        }
+        .db-staff-info { flex: 1; }
+        .db-staff-name {
+            font-size: 14px; font-weight: 700; color: var(--text);
+            display: flex; align-items: center; gap: 8px; margin-bottom: 2px;
+        }
+        .db-staff-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; display: flex; gap: 6px; }
+        .db-quota-badge {
+            font-size: 10px; font-weight: 800; padding: 2px 7px;
+            border-radius: 5px; background: rgba(255,64,96,0.15);
+            color: var(--danger); border: 1px solid rgba(255,64,96,0.3);
+            letter-spacing: 0.3px;
+        }
+        .db-quota-bar-wrap { display: flex; align-items: center; gap: 8px; }
+        .db-quota-bar-bg {
+            flex: 1; height: 6px; background: rgba(255,255,255,0.06);
+            border-radius: 3px; overflow: hidden;
+        }
+        .db-quota-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+        .db-quota-label { font-size: 11px; white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+        /* Linen rows */
+        .db-linen-hdr {
+            display: flex; align-items: center;
+            padding: 0 0 4px; border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 2px;
+        }
+        .db-linen-row {
+            display: flex; align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .db-linen-row:last-child { border-bottom: none; }
+        .db-linen-label {
+            flex: 1; font-size: 14px; font-weight: 500; color: var(--text);
+            padding-right: 8px;
+        }
+        .db-linen-cell {
+            width: 52px; text-align: center;
+            display: flex; flex-direction: column; align-items: center; gap: 1px;
+        }
+        .db-linen-num {
+            font-size: 18px; font-weight: 800;
+            font-family: 'JetBrains Mono', monospace; line-height: 1.1;
+            color: var(--text);
+        }
+        .db-linen-tag {
+            font-size: 10px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        /* Exception rows */
+        .db-exception-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .db-exception-row:last-child { border-bottom: none; }
+        .db-ex-room {
+            font-size: 15px; font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text); min-width: 44px;
+        }
+        .db-ex-status {
+            font-size: 13px; font-weight: 800; min-width: 40px;
+        }
+        .db-ex-info { font-size: 12px; color: var(--text-muted); flex: 1; }
+        .sync-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--bg-elevated);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 14px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .sync-status { display: flex; align-items: center; gap: 9px; font-size: 15px; color: var(--text-secondary); }
+        .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+        .sync-dot.offline { background: var(--warning); }
+        .sync-dot.syncing { animation: pulse 0.9s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+        .sync-btn {
+            padding: 9px 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-sm);
+            color: var(--text); font-family: inherit; font-size: 15px; font-weight: 500;
+            cursor: pointer;
+        }
+        .sync-btn:active { background: rgba(255,255,255,0.1); }
+
+        /* ==============================
+           TOAST
+        ============================== */
+        .toast {
+            position: fixed;
+            bottom: 88px; left: 50%;
+            transform: translateX(-50%) translateY(24px);
+            background: var(--bg-card);
+            padding: 13px 22px;
+            border-radius: var(--radius);
+            font-size: 15px; font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            opacity: 0;
+            transition: all 0.28s cubic-bezier(0.175,0.885,0.32,1.275);
+            z-index: 500;
+            border-left: 3px solid var(--accent);
+            white-space: nowrap;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.error { border-left-color: var(--danger); }
+
+        /* ==============================
+           CHECKLIST TAB
+        ============================== */
+        .cl-floor-selector {
+            display: flex; gap: 8px; margin-bottom: 16px;
+            overflow-x: auto; padding-bottom: 4px;
+        }
+        .cl-floor-btn {
+            flex-shrink: 0; padding: 9px 18px;
+            background: var(--bg-card);
+            border: 1.5px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.18s;
+        }
+        .cl-floor-btn.active {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .cl-progress-bar {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .cl-progress-track {
+            flex: 1; height: 6px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 3px; overflow: hidden;
+        }
+        .cl-progress-fill {
+            height: 100%; background: var(--accent);
+            border-radius: 3px; transition: width 0.4s ease;
+        }
+        .cl-progress-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px; color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .cl-room-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 9px;
+            margin-bottom: 16px;
+        }
+
+        .cl-room-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 14px 10px;
+            border: 1.5px solid rgba(255,255,255,0.06);
+            cursor: pointer;
+            transition: all 0.18s;
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        .cl-room-card:active { transform: scale(0.95); }
+        .cl-room-card.done { border-color: var(--success); background: rgba(0,224,150,0.06); }
+        .cl-room-card.in-progress { border-color: var(--warning); background: rgba(255,170,0,0.06); }
+
+        .cl-room-no {
+            font-size: 22px; font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+        .cl-room-type {
+            font-size: 12px; color: var(--text-secondary);
+            font-weight: 600;
+            text-align: center; line-height: 1.3;
+        }
+        .cl-room-status {
+            font-size: 15px; font-weight: 700;
+            padding: 3px 8px; border-radius: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .cl-status-VD  { background: rgba(255,64,96,0.2);   color: var(--danger); }
+        .cl-status-VC  { background: rgba(0,224,150,0.2);   color: var(--success); }
+        .cl-status-OC  { background: rgba(69,170,242,0.2);  color: #45aaf2; }
+        .cl-status-OD  { background: rgba(255,170,0,0.2);   color: var(--warning); }
+        .cl-status-RS  { background: rgba(124,92,252,0.2);  color: var(--accent2); }
+        .cl-status-TD  { background: rgba(254,211,48,0.2);  color: var(--lp); }
+        .cl-status-OOO { background: rgba(255,64,96,0.35);  color: #ff8099; }
+        .cl-status-OOS { background: rgba(136,136,168,0.2); color: var(--text-secondary); }
+        .cl-status-none { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+
+        .cl-room-attendant {
+            font-size: 15px; color: var(--text-muted);
+            display: flex; align-items: center; gap: 4px;
+        }
+        .cl-room-mini-avatar {
+            width: 16px; height: 16px; border-radius: 50%;
+            overflow: hidden; background: var(--bg-elevated);
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 7px; font-weight: 700; color: white; flex-shrink: 0;
+        }
+        .cl-room-mini-avatar img { width:100%;height:100%;object-fit:cover; }
+
+        .cl-checklist-pct {
+            font-size: 15px; color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ==============================
+           ROOM DETAIL MODAL
+        ============================== */
+        #roomModal {
+            position: fixed; inset: 0; z-index: 2000;
+            background: var(--bg-base);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: var(--bg-elevated);
+            padding: 16px 18px;
+            display: flex; align-items: center; gap: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+        }
+        .modal-back {
+            width: 36px; height: 36px;
+            background: var(--bg-card); border: none;
+            border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: var(--text); flex-shrink: 0;
+        }
+        .modal-room-info { flex: 1; }
+        .modal-room-no { font-size: 20px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .modal-room-type { font-size: 15px; color: var(--text-secondary); margin-top: 1px; }
+
+        .modal-body {
+            flex: 1; overflow-y: auto;
+            padding: 16px 16px 120px;
+        }
+
+        /* Status + type selector */
+        .modal-selectors {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-bottom: 18px;
+        }
+        .modal-selector-group label {
+            font-size: 15px; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.8px;
+            display: block; margin-bottom: 6px;
+        }
+        .modal-selector-btns {
+            display: flex; flex-wrap: wrap; gap: 6px;
+        }
+        .modal-sel-btn {
+            padding: 7px 12px;
+            background: var(--bg-elevated);
+            border: 1.5px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .modal-sel-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--accent);
+        }
+
+        /* Checklist sections */
+        .cl-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            margin-bottom: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .cl-section-header {
+            padding: 13px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; background: rgba(255,255,255,0.02);
+        }
+        .cl-section-title {
+            font-size: 15px; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .cl-section-icon { font-size: 16px; }
+        .cl-section-count {
+            font-size: 15px; color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .cl-section-body { padding: 4px 0 8px; }
+
+        .cl-check-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer; transition: background 0.12s;
+        }
+        .cl-check-row:last-child { border-bottom: none; }
+        .cl-check-row:active { background: var(--bg-card-hover); }
+
+        .cl-checkbox {
+            width: 22px; height: 22px;
+            border-radius: 6px;
+            border: 2px solid var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s; flex-shrink: 0;
+        }
+        .cl-check-row.checked .cl-checkbox {
+            background: var(--accent); border-color: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        .cl-check-row.checked .cl-checkbox::after { content: '✓'; font-size: 15px; font-weight: 700; color: var(--bg-base); }
+        .cl-check-label {
+            font-size: 15px; flex: 1;
+        }
+        .cl-check-row.checked .cl-check-label { color: var(--text-muted); text-decoration: line-through; }
+
+        /* Linen IN/OUT rows */
+        .cl-linen-row {
+            display: flex; align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            gap: 10px;
+        }
+        .cl-linen-row:last-child { border-bottom: none; }
+        .cl-linen-label { flex: 1; font-size: 15px; }
+        .cl-inout-btns { display: flex; gap: 6px; }
+        .cl-inout-btn {
+            padding: 6px 14px;
+            background: var(--bg-elevated);
+            border: 1.5px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-family: inherit; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .cl-inout-btn.in-active  { background: rgba(0,224,150,0.15); border-color: var(--success); color: var(--success); }
+        .cl-inout-btn.out-active { background: rgba(255,64,96,0.15);  border-color: var(--danger);  color: var(--danger); }
+
+        /* Time display */
+        .cl-time-row {
+            display: flex; gap: 10px; margin-bottom: 14px;
+        }
+        .cl-time-chip {
+            flex: 1; background: var(--bg-card);
+            border-radius: var(--radius); padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .cl-time-chip label { font-size: 15px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px; }
+        .cl-time-chip span { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600; color: var(--accent); }
+
+        /* Modal footer buttons */
+        .modal-footer {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--bg-elevated);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 14px 16px;
+            display: flex; gap: 10px;
+        }
+        .modal-btn-start {
+            padding: 10px 16px;
+            background: linear-gradient(135deg, var(--warning), #e8930a);
+            border: none; border-radius: var(--radius-sm);
+            color: var(--bg-base); font-family: inherit; font-size: 15px; font-weight: 700;
+            cursor: pointer; white-space: nowrap;
+        }
+        .modal-btn-start:disabled { opacity: 0.4; cursor: not-allowed; }
+        .modal-btn-done {
+            flex: 1; padding: 18px;
+            background: linear-gradient(135deg, var(--accent), #00c9a0);
+            border: none; border-radius: var(--radius);
+            color: var(--bg-base); font-family: inherit; font-size: 16px; font-weight: 700;
+            cursor: pointer; width: 100%;
+        }
+        .modal-btn-done:disabled { opacity: 0.3; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading" class="hidden">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading…</div>
+</div>
+
+<!-- ROOM DETAIL MODAL -->
+<div id="roomModal" class="hidden">
+    <div class="modal-header">
+        <button class="modal-back" onclick="closeRoomModal()">←</button>
+        <div class="modal-room-info">
+            <div class="modal-room-no" id="modalRoomNo"></div>
+            <div class="modal-room-type" id="modalRoomType"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <div id="modalStatusBadge" class="cl-room-status cl-status-none">–</div>
+            <button class="modal-btn-start" id="modalStartBtn" onclick="recordTimeIn()"
+                style="padding:10px 14px;font-size:15px;border-radius:10px;white-space:nowrap;">
+                ⏱ Start
+            </button>
+        </div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" style="gap:8px;">
+        <button onclick="printRoomChecklist()" style="
+            padding:18px 14px;
+            background:var(--bg-elevated);
+            border:1.5px solid rgba(255,255,255,0.1);
+            border-radius:var(--radius);
+            color:var(--text-secondary);font-family:inherit;font-size:15px;font-weight:700;
+            cursor:pointer;white-space:nowrap;">
+            🖨 Print
+        </button>
+        <button class="modal-btn-done" id="modalDoneBtn" onclick="saveRoomChecklist()" disabled>✓ Done</button>
+    </div>
+</div>
+
+<!-- EDIT REQUEST MODAL -->
+<div id="editModal" class="hidden" style="
+    position:fixed;inset:0;z-index:3500;
+    background:rgba(8,8,16,0.85);backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;padding:24px;">
+    <div style="background:var(--bg-card);border-radius:var(--radius-xl);
+                padding:24px;width:100%;max-width:340px;
+                border:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:16px;font-weight:700;margin-bottom:4px;" id="editModalTitle">Edit Request</div>
+        <div style="font-size:15px;color:var(--text-muted);margin-bottom:20px;" id="editModalSub"></div>
+        <label style="font-size:15px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;">Quantity</label>
+        <input type="number" id="editQtyInput" min="1"
+            style="width:100%;padding:16px;background:var(--bg-elevated);
+                   border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius);
+                   color:var(--text);font-family:'JetBrains Mono',monospace;font-size:18px;
+                   text-align:center;margin-bottom:20px;">
+        <div style="display:flex;gap:10px;">
+            <button onclick="closeEditModal()" style="
+                flex:1;padding:14px;background:var(--bg-elevated);
+                border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);
+                color:var(--text-secondary);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;">
+                Cancel
+            </button>
+            <button onclick="saveEdit()" style="
+                flex:2;padding:14px;
+                background:linear-gradient(135deg,var(--accent),#00c9a0);
+                border:none;border-radius:var(--radius);
+                color:var(--bg-base);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- STAFF EDIT MODAL -->
+<div id="staffModal" class="hidden" style="
+    position:fixed;inset:0;z-index:3500;
+    background:rgba(8,8,16,0.88);backdrop-filter:blur(10px);
+    display:flex;align-items:flex-end;justify-content:center;padding:0;">
+    <div style="background:var(--bg-card);border-radius:var(--radius-xl) var(--radius-xl) 0 0;
+                padding:28px 24px 36px;width:100%;max-width:480px;
+                border-top:1px solid rgba(255,255,255,0.07);
+                max-height:90vh;overflow-y:auto;">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+            <div style="font-size:17px;font-weight:700;" id="staffModalTitle">Add Staff</div>
+            <button onclick="closeStaffModal()" style="
+                width:32px;height:32px;border-radius:50%;background:var(--bg-elevated);
+                border:none;color:var(--text-secondary);font-size:16px;cursor:pointer;">✕</button>
+        </div>
+
+        <!-- Avatar preview -->
+        <div style="display:flex;justify-content:center;margin-bottom:22px;">
+            <div id="staffModalAvatar" style="
+                width:72px;height:72px;border-radius:50%;overflow:hidden;
+                background:var(--bg-elevated);border:2px solid rgba(255,255,255,0.08);
+                display:flex;align-items:center;justify-content:center;
+                font-size:26px;font-weight:700;color:var(--text-muted);">
+                👤
+            </div>
+        </div>
+
+        <!-- Name -->
+        <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" id="smName" placeholder="e.g. AHMAD SYAFIQ"
+                style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase(); updateStaffModalAvatar()">
+        </div>
+
+        <!-- Role -->
+        <div class="form-group">
+            <label class="form-label">Role</label>
+            <div style="display:flex;gap:10px;">
+                <button id="smRoleStaff" onclick="setStaffRole('staff')" class="role-sel-btn active">
+                    Staff
+                </button>
+                <button id="smRoleSv" onclick="setStaffRole('supervisor')" class="role-sel-btn">
+                    Supervisor
+                </button>
+            </div>
+        </div>
+
+        <!-- PIN -->
+        <div class="form-group">
+            <label class="form-label" id="smPinLabel">PIN (4 digits)</label>
+            <div style="position:relative;">
+                <input type="password" class="form-input" id="smPin" maxlength="4"
+                    inputmode="numeric" pattern="[0-9]*" placeholder="••••"
+                    style="font-family:'JetBrains Mono',monospace;font-size:22px;letter-spacing:8px;text-align:center;padding-right:48px;">
+                <button onclick="togglePinVis('smPin','smPinEye')" id="smPinEye" style="
+                    position:absolute;right:14px;top:50%;transform:translateY(-50%);
+                    background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-muted);">👁</button>
+            </div>
+        </div>
+
+        <!-- Confirm PIN (shown for new staff or when changing PIN) -->
+        <div class="form-group" id="smConfirmGroup">
+            <label class="form-label">Confirm PIN</label>
+            <input type="password" class="form-input" id="smPinConfirm" maxlength="4"
+                inputmode="numeric" pattern="[0-9]*" placeholder="••••"
+                style="font-family:'JetBrains Mono',monospace;font-size:22px;letter-spacing:8px;text-align:center;">
+        </div>
+
+        <!-- Monthly Quota -->
+        <div class="form-group">
+            <label class="form-label">Monthly Room Quota</label>
+            <input type="number" class="form-input" id="smQuota" min="0" max="999"
+                placeholder="e.g. 200" inputmode="numeric"
+                style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;text-align:center;">
+            <div style="font-size:12px;color:var(--text-muted);margin-top:5px;">
+                Rooms per month before overtime. Leave 0 if not applicable.
+            </div>
+        </div>
+
+        <!-- Photo -->
+        <div class="form-group">
+            <label class="form-label">Photo (optional)</label>
+
+            <!-- Hidden file input — accepts camera + gallery -->
+            <input type="file" id="smPhotoFile" accept="image/*" capture="environment"
+                style="display:none;" onchange="handlePhotoFile(event)">
+
+            <!-- Show picker buttons when no photo -->
+            <div id="smPhotoPickerRow" style="display:flex;gap:8px;">
+                <button type="button" onclick="triggerPhotoPicker(false)" style="
+                    flex:1;padding:13px 10px;background:var(--bg-elevated);
+                    border:1.5px solid rgba(255,255,255,0.07);border-radius:var(--radius);
+                    color:var(--text-secondary);font-family:inherit;font-size:15px;
+                    font-weight:600;cursor:pointer;display:flex;align-items:center;
+                    justify-content:center;gap:7px;">
+                    🖼 Gallery
+                </button>
+                <button type="button" onclick="triggerPhotoPicker(true)" style="
+                    flex:1;padding:13px 10px;background:var(--bg-elevated);
+                    border:1.5px solid rgba(255,255,255,0.07);border-radius:var(--radius);
+                    color:var(--text-secondary);font-family:inherit;font-size:15px;
+                    font-weight:600;cursor:pointer;display:flex;align-items:center;
+                    justify-content:center;gap:7px;">
+                    📷 Camera
+                </button>
+            </div>
+
+            <!-- OR paste a Drive link -->
+            <div style="display:flex;align-items:center;gap:8px;margin:10px 0 8px;">
+                <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
+                <span style="font-size:15px;color:var(--text-muted);white-space:nowrap;">or paste Google Drive link</span>
+                <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
+            </div>
+            <input type="text" class="form-input" id="smPhoto" placeholder="https://drive.google.com/file/d/…"
+                oninput="onPhotoUrlInput()" style="font-size:15px;">
+
+            <!-- Photo preview (shown when photo is set) -->
+            <div id="smPhotoPreview" class="hidden" style="
+                margin-top:12px;position:relative;display:inline-block;">
+                <img id="smPhotoPreviewImg" src="" alt="Preview" style="
+                    width:80px;height:80px;border-radius:50%;object-fit:cover;
+                    border:2px solid var(--accent);display:block;">
+                <button type="button" onclick="removePhoto()" style="
+                    position:absolute;top:-4px;right:-4px;
+                    width:22px;height:22px;border-radius:50%;
+                    background:var(--danger);border:none;
+                    color:white;font-size:15px;cursor:pointer;
+                    display:flex;align-items:center;justify-content:center;
+                    font-weight:700;line-height:1;">✕</button>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+            <button onclick="closeStaffModal()" style="
+                flex:1;padding:15px;background:var(--bg-elevated);
+                border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);
+                color:var(--text-secondary);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;">
+                Cancel
+            </button>
+            <button onclick="saveStaffMember()" style="
+                flex:2;padding:15px;
+                background:linear-gradient(135deg,var(--accent),#00c9a0);
+                border:none;border-radius:var(--radius);
+                color:var(--bg-base);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- STAFF DELETE CONFIRM -->
+<div id="staffDeleteDialog" class="hidden" style="
+    position:fixed;inset:0;z-index:4000;
+    background:rgba(8,8,16,0.88);backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:center;padding:24px;">
+    <div style="background:var(--bg-card);border-radius:var(--radius-xl);
+                padding:28px 24px;width:100%;max-width:300px;
+                border:1px solid rgba(255,64,96,0.2);text-align:center;">
+        <div style="font-size:30px;margin-bottom:12px;">⚠️</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Remove Staff?</div>
+        <div style="font-size:15px;color:var(--text-secondary);margin-bottom:24px;line-height:1.5;"
+             id="staffDeleteMsg"></div>
+        <div style="display:flex;gap:10px;">
+            <button onclick="closeStaffDelete()" style="
+                flex:1;padding:14px;background:var(--bg-elevated);
+                border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);
+                color:var(--text-secondary);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;">
+                Cancel
+            </button>
+            <button id="staffDeleteYes" style="
+                flex:1;padding:14px;
+                background:linear-gradient(135deg,var(--danger),#cc2244);
+                border:none;border-radius:var(--radius);
+                color:white;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">
+                Remove
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- UPLOAD PROGRESS OVERLAY -->
+<div id="uploadProgressOverlay" class="hidden" style="
+    position:fixed;inset:0;z-index:5000;
+    background:rgba(8,8,16,0.92);backdrop-filter:blur(10px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;">
+    <div style="width:56px;height:56px;border-radius:50%;
+        border:3px solid rgba(0,229,184,0.2);
+        border-top-color:var(--accent);
+        animation:spin 0.8s linear infinite;"></div>
+    <div id="uploadProgressMsg" style="font-size:15px;font-weight:600;color:var(--text-secondary);">
+        Uploading…
+    </div>
+    <div style="font-size:15px;color:var(--text-muted);">Please wait, do not close</div>
+</div>
+
+<!-- LOGOUT CONFIRM DIALOG -->
+<div id="logoutDialog" class="hidden" style="
+    position:fixed;inset:0;z-index:4000;
+    background:rgba(8,8,16,0.88);backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:center;padding:24px;">
+    <div style="background:var(--bg-card);border-radius:var(--radius-xl);
+                padding:28px 24px;width:100%;max-width:300px;
+                border:1px solid rgba(255,255,255,0.06);text-align:center;">
+        <div id="logoutAvatarSlot" style="margin:0 auto 14px;width:60px;height:60px;border-radius:50%;overflow:hidden;background:var(--bg-elevated);"></div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:6px;" id="logoutUserLabel"></div>
+        <div style="font-size:15px;color:var(--text-muted);margin-bottom:24px;line-height:1.5;">
+            Are you sure you want to log out?
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button onclick="closeLogoutDialog()" style="
+                flex:1;padding:14px;background:var(--bg-elevated);
+                border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);
+                color:var(--text-secondary);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;">
+                Stay
+            </button>
+            <button onclick="confirmLogout()" style="
+                flex:1;padding:14px;
+                background:linear-gradient(135deg,#ff4060,#cc2244);
+                border:none;border-radius:var(--radius);
+                color:white;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">
+                Log Out
+            </button>
+        </div>
+    </div>
+</div>
+<div id="confirmDialog" class="hidden" style="
+    position:fixed;inset:0;z-index:3500;
+    background:rgba(8,8,16,0.85);backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;padding:24px;">
+    <div style="background:var(--bg-card);border-radius:var(--radius-xl);
+                padding:24px;width:100%;max-width:320px;
+                border:1px solid rgba(255,64,96,0.2);">
+        <div style="font-size:28px;text-align:center;margin-bottom:12px;">🗑️</div>
+        <div style="font-size:16px;font-weight:700;text-align:center;margin-bottom:8px;">Delete Request?</div>
+        <div style="font-size:15px;color:var(--text-secondary);text-align:center;
+                    margin-bottom:24px;line-height:1.5;" id="confirmDialogMsg"></div>
+        <div style="display:flex;gap:10px;">
+            <button onclick="closeConfirm()" style="
+                flex:1;padding:14px;background:var(--bg-elevated);
+                border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);
+                color:var(--text-secondary);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;">
+                Cancel
+            </button>
+            <button id="confirmYesBtn" style="
+                flex:1;padding:14px;
+                background:linear-gradient(135deg,var(--danger),#cc2244);
+                border:none;border-radius:var(--radius);
+                color:white;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================
+     SETUP SCREEN
+========================= -->
+<div id="setupScreen" class="hidden">
+    <div class="setup-icon">⚙️</div>
+    <h1 class="setup-title">First-Time Setup</h1>
+    <p class="setup-desc">Paste your Google Apps Script URL to connect this app to your Google Sheet.</p>
+    <div class="setup-card">
+        <label class="setup-label">Google Apps Script URL</label>
+        <input type="url" class="setup-input" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/...">
+        <button class="btn-accent" onclick="saveSetup()">Connect & Continue</button>
+        <button class="btn-ghost" onclick="skipSetup()">Use Demo Mode</button>
+    </div>
+</div>
+
+<!-- ========================
+     LOGIN — STEP 1: Pick staff
+========================= -->
+<div id="loginScreen" class="hidden">
+    <div class="login-hero">
+        <div class="login-logo">HK</div>
+        <h1 class="login-title">Elopura HK</h1>
+        <p class="login-subtitle">Housekeeping System</p>
+    </div>
+
+    <div class="login-card">
+        <span class="login-section-label">Who are you?</span>
+        <div class="staff-grid" id="staffGrid">
+            <!-- Populated dynamically from Google Sheet -->
+        </div>
+        <button class="continue-btn" id="continueBtn" disabled onclick="goToPin()">Continue</button>
+    </div>
+</div>
+
+<!-- ========================
+     LOGIN — STEP 2: Enter PIN
+========================= -->
+<div id="pinScreen" class="hidden">
+    <div class="pin-preview">
+        <div class="pin-avatar-wrap" id="pinAvatarWrap">
+            <div class="pin-avatar-fallback avatar-fallback" id="pinAvatarFallback"></div>
+        </div>
+        <div class="pin-user-name" id="pinUserName"></div>
+        <div class="pin-role-pill" id="pinRolePill"></div>
+    </div>
+
+    <p class="pin-prompt">Enter your PIN to continue</p>
+
+    <div class="pin-dots" id="pinDots">
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+    </div>
+
+    <div class="numpad">
+        <button class="numpad-key" onclick="pinPress('1')">1</button>
+        <button class="numpad-key" onclick="pinPress('2')">2</button>
+        <button class="numpad-key" onclick="pinPress('3')">3</button>
+        <button class="numpad-key" onclick="pinPress('4')">4</button>
+        <button class="numpad-key" onclick="pinPress('5')">5</button>
+        <button class="numpad-key" onclick="pinPress('6')">6</button>
+        <button class="numpad-key" onclick="pinPress('7')">7</button>
+        <button class="numpad-key" onclick="pinPress('8')">8</button>
+        <button class="numpad-key" onclick="pinPress('9')">9</button>
+        <button class="numpad-key key-empty"></button>
+        <button class="numpad-key" onclick="pinPress('0')">0</button>
+        <button class="numpad-key key-del" onclick="pinDel()">⌫</button>
+    </div>
+
+    <div class="pin-error" id="pinError"></div>
+    <button class="pin-back" onclick="backToStaff()">← Back</button>
+</div>
+
+<!-- ========================
+     MAIN APP
+========================= -->
+<div id="app">
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">
+                <div class="logo-icon">HK</div>
+                <div class="logo-text">Elopura <span>HK</span></div>
+            </div>
+            <div class="header-right">
+                <div class="date-chip" id="datePill"></div>
+                <button class="user-pill" id="userPill" onclick="logout()">
+                    <div class="user-pill-avatar" id="headerAvatarWrap">
+                        <div class="avatar-fallback" id="headerAvatarFallback"></div>
+                    </div>
+                    <span id="userPillName"></span>
+                </button>
+            </div>
+        </div>
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">
+                <span class="tab-icon">📋</span>Overview
+            </button>
+            <button class="tab" data-tab="add">
+                <span class="tab-icon">➕</span>Requests
+            </button>
+            <button class="tab" data-tab="checklist">
+                <span class="tab-icon">🏨</span>Checklist
+            </button>
+            <button class="tab hidden" data-tab="stock" id="stockTabBtn">
+                <span class="tab-icon">📦</span>Stock
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================
+         HOME SCREEN (big tiles)
+    ========================= -->
+    <div id="homeScreen">
+        <div class="home-hero">
+            <div>
+                <div class="home-greeting">Hello, <span id="homeUserName">—</span> 👋</div>
+                <div class="home-date" id="homeDate"></div>
+            </div>
+            <div class="home-avatar-wrap" id="homeAvatarWrap"></div>
+        </div>
+        <div class="home-tiles">
+            <!-- WIDE: Daily Checklist — most used, full width -->
+            <button class="home-tile tile-checklist tile-wide" onclick="goToSection('checklist')">
+                <div class="tile-icon-wrap">🏨</div>
+                <div class="tile-text">
+                    <div class="tile-title">Daily Checklist</div>
+                    <div class="tile-desc">Room cleaning status & attendant log</div>
+                </div>
+                <div class="tile-badge hidden" id="homeBadgeChecklist"></div>
+            </button>
+
+            <!-- ROW: Requests + Overview side by side -->
+            <button class="home-tile tile-requests" onclick="goToSection('add')">
+                <div class="tile-icon-wrap">➕</div>
+                <div class="tile-text">
+                    <div class="tile-title">Requests</div>
+                    <div class="tile-desc">Amenity requests by level</div>
+                </div>
+                <div class="tile-badge hidden" id="homeBadgeRequests"></div>
+            </button>
+
+            <button class="home-tile tile-overview" onclick="goToSection('overview')">
+                <div class="tile-icon-wrap">📋</div>
+                <div class="tile-text">
+                    <div class="tile-title">Overview</div>
+                    <div class="tile-desc">Progress & mineral water</div>
+                </div>
+                <div class="tile-badge hidden" id="homeBadgeOverview"></div>
+            </button>
+
+            <!-- SUPERVISOR TILES — hidden for runners -->
+            <button class="home-tile tile-dashboard hidden" id="homeTileDashboard" onclick="goToSection('dashboard')">
+                <div class="tile-icon-wrap">📊</div>
+                <div class="tile-text">
+                    <div class="tile-title">Dashboard</div>
+                    <div class="tile-desc">Floor progress & staff stats</div>
+                </div>
+            </button>
+
+            <button class="home-tile tile-stock hidden" id="homeTileStock" onclick="goToSection('stock')">
+                <div class="tile-icon-wrap">📦</div>
+                <div class="tile-text">
+                    <div class="tile-title">Stock</div>
+                    <div class="tile-desc">Inventory & low-stock alerts</div>
+                </div>
+                <div class="tile-badge hidden" id="homeBadgeStock"></div>
+            </button>
+
+            <button class="home-tile tile-staff tile-wide hidden" id="homeTileStaff" onclick="goToSection('staff')">
+                <div class="tile-icon-wrap">👥</div>
+                <div class="tile-text">
+                    <div class="tile-title">Staff</div>
+                    <div class="tile-desc">Add, edit & manage staff accounts and quotas</div>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <main class="main hidden" id="mainContent">
+        <!-- OVERVIEW TAB -->
+        <div class="tab-content active" id="overviewTab">
+            <div class="section-back-bar" onclick="goHome()">
+                <button class="section-back-btn">←</button>
+                <span class="section-back-label">Back to Home</span>
+            </div>
+            <div class="alert-card hidden" id="stockAlert">
+                <div class="alert-header">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-title">Low Stock Alert</div>
+                </div>
+                <div id="alertList"></div>
+            </div>
+
+            <div class="section-header">
+                <span class="section-title">Today's Requests</span>
+                <span class="section-badge" id="progressBadge">0/0</span>
+            </div>
+            <div id="levelsList"></div>
+        </div>
+
+        <!-- ADD REQUEST TAB -->
+        <div class="tab-content" id="addTab">
+            <div class="section-back-bar" onclick="goHome()">
+                <button class="section-back-btn">←</button>
+                <span class="section-back-label">Back to Home</span>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label class="form-label">Level</label>
+                    <!-- Dropdown shown before lock -->
+                    <div class="select-wrap" id="levelSelectWrap">
+                        <select class="form-select" id="formLevel">
+                            <option value="">Select level…</option>
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                            <option value="3">Level 3</option>
+                            <option value="4">Level 4</option>
+                            <option value="public">Public Area</option>
+                        </select>
+                    </div>
+                    <!-- Locked badge shown after first item added -->
+                    <div id="levelLockedBadge" class="hidden" style="
+                        display:flex;align-items:center;justify-content:space-between;
+                        background:var(--bg-elevated);
+                        border:1.5px solid var(--accent);
+                        border-radius:var(--radius);
+                        padding:13px 15px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:16px;">🔒</span>
+                            <span id="levelLockedLabel" style="font-size:15px;font-weight:700;color:var(--accent);"></span>
+                        </div>
+                        <button onclick="unlockLevel()" style="
+                            background:rgba(255,170,0,0.12);border:none;
+                            border-radius:7px;padding:5px 11px;
+                            color:var(--warning);font-family:inherit;
+                            font-size:15px;font-weight:700;cursor:pointer;
+                            letter-spacing:0.5px;text-transform:uppercase;">
+                            Change
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Item</label>
+                    <div class="select-wrap">
+                        <select class="form-select" id="formItem">
+                            <option value="">Select item…</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" class="form-input" id="formQty" placeholder="Enter quantity" min="1">
+                </div>
+                <button class="btn-submit" onclick="submitRequest()">+ Add Request</button>
+            </div>
+
+            <div class="section-header" style="margin-top:18px;">
+                <span class="section-title">My Requests Today</span>
+                <span class="section-badge" id="myCount">0</span>
+            </div>
+            <div id="myRequests"></div>
+
+            <div id="saveAndGoBtn" class="hidden" style="margin-top:16px;">
+                <button onclick="goHome()" style="
+                    width:100%; padding:18px;
+                    background: linear-gradient(135deg, var(--accent), #00c9a0);
+                    border:none; border-radius:var(--radius);
+                    color:var(--bg-base); font-family:inherit;
+                    font-size:16px; font-weight:700; cursor:pointer;
+                    letter-spacing:0.3px;">
+                    ✓ Done — Back to Home
+                </button>
+            </div>
+        </div>
+
+        <!-- STOCK TAB -->
+        <div class="tab-content" id="stockTab">
+            <div class="section-back-bar" onclick="goHome()">
+                <button class="section-back-btn">←</button>
+                <span class="section-back-label">Back to Home</span>
+            </div>
+            <div id="stockList"></div>
+        </div>
+
+        <!-- STAFF TAB -->
+        <div class="tab-content" id="staffTab">
+            <div class="section-back-bar" onclick="goHome()">
+                <button class="section-back-btn">←</button>
+                <span class="section-back-label">Back to Home</span>
+            </div>
+            <button onclick="openStaffModal(null)" style="
+                width:100%;padding:15px;margin-bottom:16px;
+                background:linear-gradient(135deg,var(--accent),#00c9a0);
+                border:none;border-radius:var(--radius);
+                color:var(--bg-base);font-family:inherit;font-size:15px;font-weight:700;
+                cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                + Add New Staff
+            </button>
+            <div id="staffMgmtList"></div>
+        </div>
+        <div class="tab-content" id="checklistTab">
+            <div class="section-back-bar" onclick="goHome()">
+                <button class="section-back-btn">←</button>
+                <span class="section-back-label">Back to Home</span>
+            </div>
+            <!-- Floor selector + print button row -->
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;">
+                <div id="clFloorSelector" class="cl-floor-selector" style="margin-bottom:0;flex:1;"></div>
+                <button onclick="printDailyChecklist()" style="
+                    background:rgba(0,224,150,0.1);border:1.5px solid var(--accent);
+                    color:var(--accent);font-family:inherit;font-size:15px;font-weight:700;
+                    padding:8px 14px;border-radius:var(--radius-sm);cursor:pointer;
+                    white-space:nowrap;letter-spacing:0.3px;">
+                    🖨 Print
+                </button>
+            </div>
+            <!-- Room grid -->
+            <div id="clRoomGrid"></div>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div class="tab-content" id="dashboardTab">
+            <div class="section-back-bar" onclick="goHome()">
+                <button class="section-back-btn">←</button>
+                <span class="section-back-label">Back to Home</span>
+            </div>
+            <div id="dashboardContent"></div>
+        </div>
+    </main>
+
+    <div class="sync-bar">
+        <div class="sync-status">
+            <span class="sync-dot" id="syncDot"></span>
+            <span id="syncText">Ready</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <button class="sync-btn" onclick="syncNow()">↻ Sync</button>
+            <button class="sync-btn" onclick="hardReload()" style="background:rgba(255,170,0,0.12);color:var(--warning);border-color:rgba(255,170,0,0.2);" title="Clear cache & reload">⚡ Reload</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// CONFIG
+// =============================================
+const CFG = {
+    SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxOAl0ZV3OlJDNNYgbDaf8tujglUmbzN7NX4tPE5URl6YnxhfMuwKbbTVNrJl6dONI/exec',
+    DEMO: false
+};
+
+// =============================================
+// STATE
+// =============================================
+let currentUser  = null;
+let currentRole  = null;
+let staffList    = [];   // [{name, role, pin, photo, color}]
+let items        = [];
+let requests     = {};
+let water        = {};
+let pinBuffer    = '';
+let selectedStaff = null;
+
+// Avatar gradient colors for fallback
+const AVATAR_COLORS = [
+    'linear-gradient(135deg,#ff6b8a,#e85571)',
+    'linear-gradient(135deg,#a55eea,#8c44ce)',
+    'linear-gradient(135deg,#45aaf2,#2d98da)',
+    'linear-gradient(135deg,#26de81,#20bf6b)',
+    'linear-gradient(135deg,#fed330,#f7b731)',
+    'linear-gradient(135deg,#fd9644,#e8830a)',
+];
+
+// Demo staff — used when no Sheet connected
+const DEMO_STAFF = [
+    { name:'MARCELLA',   role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[0] },
+    { name:'LINA',       role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[1] },
+    { name:'AL HAJJ',    role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[2] },
+    { name:'JUNAIDI',    role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[3] },
+    { name:'NUR EZATUL', role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[4] },
+    { name:'JUMALISA',   role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[5] },
+    { name:'FATIMAH',    role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[0] },
+    { name:'SHARIZAN',   role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[1] },
+    { name:'WAN SAIFUL', role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[2] },
+    { name:'MINA',       role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[3] },
+    { name:'IZZAT',      role:'staff',      pin:'1111', photo:'', color: AVATAR_COLORS[4] },
+    { name:'FATIN',      role:'supervisor', pin:'9999', photo:'', color: AVATAR_COLORS[5] },
+];
+
+const DEMO_ITEMS = [
+    { code:'AMEN310001', name:'BROWN SUGAR',      unit:'SACHET',  stock:2750, minStock:500 },
+    { code:'AMEN310002', name:'WHITE SUGAR',      unit:'SACHET',  stock:3250, minStock:500 },
+    { code:'AMEN310004', name:'CREAMER',          unit:'SACHET',  stock:2750, minStock:500 },
+    { code:'AMEN310005', name:'NESCAFE SACHET',   unit:'SACHET',  stock:0,    minStock:500 },
+    { code:'AMEN310006', name:'SABAH TEA',        unit:'SACHET',  stock:4100, minStock:500 },
+    { code:'AMEN310007', name:'MINERAL WATER K2', unit:'BOTTLE',  stock:1536, minStock:200 },
+    { code:'AMEN310008', name:'ROUND SOAP',       unit:'PIECES',  stock:750,  minStock:200 },
+    { code:'AMEN310009', name:'SHOWER CAP',       unit:'PIECES',  stock:700,  minStock:200 },
+    { code:'AMEN310011', name:'SLIPPER ROOM',     unit:'PAIR',    stock:1440, minStock:200 },
+    { code:'AMEN310015', name:'TISSUE BOX ROYAL', unit:'BOX',     stock:4,    minStock:50  },
+    { code:'AMEN310016', name:'LAUNDRY BAG',      unit:'PIECES',  stock:1200, minStock:200 },
+    { code:'AMEN310017', name:'SANITARY BAG',     unit:'PIECES',  stock:1340, minStock:200 },
+    { code:'AMEN310018', name:'BIG GARBAGE BAG',  unit:'PIECES',  stock:0,    minStock:100 },
+    { code:'AMEN310022', name:'TOOTHBRUSH KIT',   unit:'SET',     stock:1650, minStock:300 },
+    { code:'AMEN310023', name:'COMB',             unit:'PIECES',  stock:124,  minStock:100 },
+    { code:'AMEN310024', name:'RAZOR/SHAVER',     unit:'PIECES',  stock:246,  minStock:100 },
+    { code:'AMEN310025', name:'VANITY KITS',      unit:'PIECES',  stock:478,  minStock:100 },
+    { code:'AMEN310054', name:'TISSUE ROLL 3PLY', unit:'PIECES',  stock:700,  minStock:200 },
+];
+
+const DEMO_REQUESTS = {
+    '1':      { runner:'', items:[] },
+    '2':      { runner:'', items:[] },
+    '3':      { runner:'', items:[] },
+    '4':      { runner:'', items:[] },
+    'public': { runner:'', items:[] },
+};
+
+// =============================================
+// INIT
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Date pill
+    document.getElementById('datePill').textContent =
+        new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+
+    // Tab listeners
+    document.querySelectorAll('.tab').forEach(t =>
+        t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+    // Online/offline
+    updateOnlineStatus();
+    window.addEventListener('online',  updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    // Escape closes any open dialog
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            closeLogoutDialog();
+            closeConfirm();
+            closeEditModal();
+        }
+    });
+
+    // Check saved config — URL is now hardcoded, always live mode
+    const savedUser = localStorage.getItem('eq_user');
+    const savedRole = localStorage.getItem('eq_role');
+
+    // Clear any old demo/setup flags
+    localStorage.removeItem('eq_demo');
+
+    // If script URL changed (e.g. new deployment), wipe all stale cache
+    const storedUrl = localStorage.getItem('eq_script_url');
+    if (storedUrl !== CFG.SCRIPT_URL) {
+        localStorage.removeItem('eq_requests');
+        localStorage.removeItem('eq_items');
+        localStorage.removeItem('eq_user');
+        localStorage.removeItem('eq_role');
+    }
+
+    // Save the hardcoded URL so sync functions pick it up
+    localStorage.setItem('eq_script_url', CFG.SCRIPT_URL);
+
+    // Load staff then possibly auto-login
+    loadStaff().then(() => {
+        if (savedUser && savedRole) {
+            const staff = staffList.find(s => s.name === savedUser);
+            if (staff) { loginAs(staff); return; }
+        }
+        showLoginScreen();
+    });
+});
+
+// =============================================
+// SETUP
+// =============================================
+function saveSetup() {
+    const url = document.getElementById('scriptUrlInput').value.trim();
+    if (!url) { toast('Please enter the Script URL', true); return; }
+    CFG.SCRIPT_URL = url; CFG.DEMO = false;
+    localStorage.setItem('eq_script_url', url);
+    localStorage.removeItem('eq_demo');
+    loadStaff().then(showLoginScreen);
+}
+
+function skipSetup() {
+    CFG.DEMO = true;
+    localStorage.setItem('eq_demo', 'true');
+    localStorage.removeItem('eq_script_url');
+    loadStaff().then(showLoginScreen);
+}
+// =============================================
+// LOAD STAFF LIST (from Sheet or demo)
+// =============================================
+async function loadStaff() {
+    if (CFG.DEMO) {
+        staffList = DEMO_STAFF.map((s, i) => ({ ...s, color: AVATAR_COLORS[i % AVATAR_COLORS.length] }));
+        return;
+    }
+    try {
+        const res  = await fetch(`${CFG.SCRIPT_URL}?action=getStaff&t=${Date.now()}`, { cache: 'no-store' });
+        const data = await res.json();
+        staffList = (data.staff || []).map((s, i) => ({
+            name:  s.name,
+            role:  (s.role || '').toLowerCase() === 'supervisor' ? 'supervisor' : 'room_attendant',
+            pin:   String(s.pin || ''),
+            photo: s.photo || '',
+            quota: s.quota ? Number(s.quota) : 0,
+            color: AVATAR_COLORS[i % AVATAR_COLORS.length],
+        }));
+    } catch (e) {
+        console.warn('Staff load failed, using demo', e);
+        staffList = DEMO_STAFF.map((s, i) => ({ ...s, color: AVATAR_COLORS[i % AVATAR_COLORS.length] }));
+    }
+}
+
+// =============================================
+// SHOW LOGIN SCREEN
+// =============================================
+function showLoginScreen() {
+    document.getElementById('setupScreen').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('pinScreen').classList.add('hidden');
+    buildStaffGrid();
+}
+
+function buildStaffGrid() {
+    const grid = document.getElementById('staffGrid');
+
+    // Staff first, supervisor(s) last — but all look identical
+    const staff = staffList.filter(s => s.role !== 'supervisor');
+    const svs   = staffList.filter(s => s.role === 'supervisor');
+    // room_attendant is the standard staff role
+    const all   = [...staff, ...svs];
+
+    grid.innerHTML = all.map(s => {
+        const safeName = s.name.replace(/'/g, "\\'");
+        let avatarInner;
+        if (s.photo) {
+            avatarInner = `<img src="${toDirectUrl(s.photo)}"
+                onerror="this.parentNode.innerHTML='<div class=\\'avatar-placeholder\\'><div class=\\'ph-head\\'></div><div class=\\'ph-body\\'></div></div>'">`;
+        } else {
+            avatarInner = `<div class="avatar-placeholder">
+                <div class="ph-head"></div>
+                <div class="ph-body"></div>
+            </div>`;
+        }
+        return `
+        <button class="staff-btn ${s.role==='supervisor'?'sv-btn':''}" onclick="selectStaff('${safeName}')">
+            <div class="avatar-ring" id="av-${s.name.replace(/\s/g,'-')}"
+                 style="border-color:${s.color.includes('gradient')?'rgba(255,255,255,0.12)':s.color}">
+                ${avatarInner}
+            </div>
+            <span class="staff-name">${s.name}</span>
+        </button>`;
+    }).join('');
+
+    document.getElementById('continueBtn').disabled = true;
+    selectedStaff = null;
+}
+
+function selectStaff(name) {
+    selectedStaff = staffList.find(s => s.name === name);
+    document.querySelectorAll('.staff-btn').forEach(b => b.classList.remove('selected'));
+    // Find button by onclick
+    document.querySelectorAll('.staff-btn').forEach(b => {
+        if (b.getAttribute('onclick') === `selectStaff('${name}')`) b.classList.add('selected');
+    });
+    document.getElementById('continueBtn').disabled = false;
+}
+
+// =============================================
+// PIN SCREEN
+// =============================================
+function goToPin() {
+    if (!selectedStaff) return;
+    const s = selectedStaff;
+
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('pinScreen').classList.remove('hidden');
+
+    // Avatar
+    const wrap = document.getElementById('pinAvatarWrap');
+    wrap.className = 'pin-avatar-wrap' + (s.role === 'supervisor' ? ' sv' : '');
+    if (s.photo) {
+        wrap.innerHTML = `<img src="${toDirectUrl(s.photo)}" onerror="this.parentNode.innerHTML='<div class=\\'pin-avatar-fallback avatar-fallback\\' style=\\'background:${s.color}\\'>${s.name[0]}</div>'">`;
+    } else {
+        wrap.innerHTML = `<div class="pin-avatar-fallback avatar-fallback" style="background:${s.color}">${s.name[0]}</div>`;
+    }
+
+    document.getElementById('pinUserName').textContent = s.name;
+    const pill = document.getElementById('pinRolePill');
+    pill.textContent = s.role === 'supervisor' ? '👑 Supervisor' : '🛏 Room Attendant';
+    pill.className   = 'pin-role-pill ' + (s.role === 'supervisor' ? 'supervisor' : 'room_attendant');
+
+    pinBuffer = '';
+    updatePinDots();
+    document.getElementById('pinError').textContent = '';
+}
+
+function backToStaff() {
+    document.getElementById('pinScreen').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    pinBuffer = '';
+}
+
+function pinPress(digit) {
+    if (pinBuffer.length >= 4) return;
+    pinBuffer += digit;
+    updatePinDots();
+    if (pinBuffer.length === 4) setTimeout(checkPin, 150);
+}
+
+function pinDel() {
+    pinBuffer = pinBuffer.slice(0, -1);
+    updatePinDots();
+    document.getElementById('pinError').textContent = '';
+}
+
+function updatePinDots() {
+    const dots = document.querySelectorAll('#pinDots .pin-dot');
+    const isSv = selectedStaff && selectedStaff.role === 'supervisor';
+    dots.forEach((d, i) => {
+        d.classList.toggle('filled', i < pinBuffer.length);
+        d.classList.toggle('sv-fill', i < pinBuffer.length && isSv);
+        d.classList.remove('error');
+    });
+}
+
+function checkPin() {
+    if (!selectedStaff) return;
+    if (pinBuffer === selectedStaff.pin) {
+        loginAs(selectedStaff);
+    } else {
+        // Shake dots
+        document.querySelectorAll('#pinDots .pin-dot').forEach(d => {
+            d.classList.add('error');
+            setTimeout(() => d.classList.remove('error'), 400);
+        });
+        document.getElementById('pinError').textContent = 'Incorrect PIN. Try again.';
+        pinBuffer = '';
+        setTimeout(updatePinDots, 420);
+    }
+}
+
+// =============================================
+// LOGIN / LOGOUT
+// =============================================
+function loginAs(staff) {
+    currentUser = staff.name;
+    currentRole = staff.role;
+    localStorage.setItem('eq_user', staff.name);
+    localStorage.setItem('eq_role', staff.role);
+
+    // Hide all auth screens
+    document.getElementById('setupScreen').classList.add('hidden');
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('pinScreen').classList.add('hidden');
+
+    // Header avatar
+    const avatarWrap = document.getElementById('headerAvatarWrap');
+    if (staff.photo) {
+        avatarWrap.innerHTML = `<img src="${toDirectUrl(staff.photo)}" onerror="this.innerHTML='<div class=\\'avatar-fallback\\' style=\\'background:${staff.color}\\'>${staff.name[0]}</div>'">`;
+    } else {
+        avatarWrap.innerHTML = `<div class="avatar-fallback" style="background:${staff.color}">${staff.name[0]}</div>`;
+    }
+    document.getElementById('userPillName').textContent = staff.name + '  ⏻';
+
+    // Home screen greeting
+    document.getElementById('homeUserName').textContent = staff.name;
+    document.getElementById('homeDate').textContent =
+        new Date().toLocaleDateString('en-GB', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+
+    // Home avatar
+    const homeAv = document.getElementById('homeAvatarWrap');
+    if (staff.photo) {
+        homeAv.innerHTML = `<img src="${toDirectUrl(staff.photo)}" onerror="this.innerHTML='<div class=\\'avatar-placeholder\\'><div class=\\'ph-head\\'></div><div class=\\'ph-body\\'></div></div>'">`;
+    } else {
+        homeAv.innerHTML = `<div class="avatar-placeholder"><div class="ph-head"></div><div class="ph-body"></div></div>`;
+    }
+
+    // Role-based tiles
+    const isSv = currentRole === 'supervisor';
+    document.getElementById('homeTileStock').classList.toggle('hidden', !isSv);
+    document.getElementById('homeTileStaff').classList.toggle('hidden', !isSv);
+    document.getElementById('homeTileDashboard').classList.toggle('hidden', !isSv);
+
+    // Show app + home screen
+    document.getElementById('app').classList.add('active');
+    document.getElementById('homeScreen').classList.add('active');
+    document.getElementById('mainContent').classList.add('hidden');
+
+    loadData();
+}
+
+function goToSection(name) {
+    document.getElementById('homeScreen').classList.remove('active');
+    document.getElementById('mainContent').classList.remove('hidden');
+
+    // Show correct tab content
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const el = document.getElementById(name + 'Tab');
+    if (el) el.classList.add('active');
+
+    if (name === 'stock')     renderStock();
+    if (name === 'checklist') renderChecklistTab();
+    if (name === 'staff')     renderStaffMgmt();
+    if (name === 'dashboard') renderDashboard();
+}
+
+function goHome() {
+    document.getElementById('mainContent').classList.add('hidden');
+    document.getElementById('homeScreen').classList.add('active');
+    // Reset level lock for next session
+    document.getElementById('levelLockedBadge').classList.add('hidden');
+    document.getElementById('levelSelectWrap').classList.remove('hidden');
+    document.getElementById('formLevel').value = '';
+    document.getElementById('saveAndGoBtn').classList.add('hidden');
+}
+
+function logout() {
+    // Show avatar + name in dialog
+    const staff = staffList.find(s => s.name === currentUser);
+    const slot  = document.getElementById('logoutAvatarSlot');
+    if (staff?.photo) {
+        slot.innerHTML = `<img src="${toDirectUrl(staff.photo)}" style="width:100%;height:100%;object-fit:cover;"
+            onerror="this.parentNode.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:white;background:${staff?.color||'#444'};\\'>${(currentUser||'?')[0]}</div>'">`;
+    } else {
+        slot.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+            font-size:22px;font-weight:700;color:white;background:${staff?.color||'#444'}">
+            ${(currentUser||'?')[0]}</div>`;
+    }
+    document.getElementById('logoutUserLabel').textContent = currentUser || '';
+    document.getElementById('logoutDialog').classList.remove('hidden');
+}
+
+function closeLogoutDialog() {
+    document.getElementById('logoutDialog').classList.add('hidden');
+}
+
+function confirmLogout() {
+    closeLogoutDialog();
+    currentUser = null; currentRole = null;
+    localStorage.removeItem('eq_user');
+    localStorage.removeItem('eq_role');
+    document.getElementById('app').classList.remove('active');
+    document.getElementById('homeScreen').classList.remove('active');
+    document.getElementById('mainContent').classList.add('hidden');
+    pinBuffer = '';
+    showLoginScreen();
+}
+
+// =============================================
+// DATA LOADING
+// =============================================
+async function loadData() {
+    showLoading(true);
+
+    if (CFG.DEMO) {
+        items    = DEMO_ITEMS;
+        requests = JSON.parse(JSON.stringify(DEMO_REQUESTS));
+        water    = { level1:0, level2:45, level3:24, level4:48 };
+        afterLoad();
+        showLoading(false);
+        toast('Demo mode • Default PIN: 1111 / Supervisor: 9999');
+        return;
+    }
+
+    try {
+        const ts     = Date.now();
+        const allRes = await fetch(`${CFG.SCRIPT_URL}?action=getAll&t=${ts}`, { cache: 'no-store' });
+        const data   = await allRes.json();
+        if (data.error) throw new Error(data.error);
+        items    = data.items    || [];
+        requests = organizeRequests(data.requests || []);
+        water    = data.water    || {};
+    } catch (err) {
+        console.error('getAll failed:', err);
+        toast('Load failed — check connection', true);
+        const cached = localStorage.getItem('eq_requests');
+        if (cached) requests = JSON.parse(cached);
+        else { items = []; requests = {}; }
+    }
+
+    // Checklist fetch is independent — failure won't affect items/requests
+    try {
+        const ts    = Date.now();
+        const clRes = await fetch(`${CFG.SCRIPT_URL}?action=getChecklist&t=${ts}`, { cache: 'no-store' });
+        const clData = await clRes.json();
+        (clData.records || []).forEach(rec => { roomRecords[rec.roomNo] = rec; });
+    } catch (err) {
+        console.error('getChecklist failed:', err);
+        // non-fatal — checklist just stays empty
+    }
+
+    afterLoad();
+    saveLocal();
+    const now = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('syncText').textContent = `Synced ${now}`;
+    toast('Data synced ✓');
+
+    showLoading(false);
+}
+
+function afterLoad() {
+    const isSv = currentRole === 'supervisor';
+    document.getElementById('stockAlert').classList.toggle('hidden', !isSv);
+    document.getElementById('waterSection').classList.toggle('hidden', !isSv);
+    populateItemSelect();
+    renderAll();
+}
+
+function organizeRequests(raw) {
+    const out = { '1':{runner:'',items:[]}, '2':{runner:'',items:[]}, '3':{runner:'',items:[]}, '4':{runner:'',items:[]}, 'public':{runner:'',items:[]} };
+    raw.forEach(r => {
+        const lv = String(r.level).toLowerCase();
+        if (out[lv]) {
+            out[lv].runner = r.runner;
+            out[lv].items.push({ id:r.id||Date.now(), code:r.itemCode, name:r.itemName, qty:r.qty, unit:r.unit, done:r.done, addedBy:r.addedBy });
+        }
+    });
+    return out;
+}
+
+function populateItemSelect() {
+    const sel = document.getElementById('formItem');
+    sel.innerHTML = '<option value="">Select item…</option>' +
+        [...items].sort((a,b)=>a.name.localeCompare(b.name))
+                  .map(i => `<option value="${i.code}" data-unit="${i.unit}">${i.name}</option>`)
+                  .join('');
+}
+
+// =============================================
+// RENDER
+// =============================================
+function renderAll() {
+    renderLevels();
+    renderAlerts();
+    renderMyRequests();
+    renderWater();
+    renderStock();
+    updateProgress();
+}
+
+const LEVELS = [
+    { key:'1',      label:'Level 1',     cls:'lb-l1', abbr:'L1' },
+    { key:'2',      label:'Level 2',     cls:'lb-l2', abbr:'L2' },
+    { key:'3',      label:'Level 3',     cls:'lb-l3', abbr:'L3' },
+    { key:'4',      label:'Level 4',     cls:'lb-l4', abbr:'L4' },
+    { key:'public', label:'Public Area', cls:'lb-lp', abbr:'PA' },
+];
+
+function getStaffByName(name) {
+    return staffList.find(s => s.name === name);
+}
+
+function miniAvatar(name) {
+    const s = getStaffByName(name);
+    if (!s) return '';
+    if (s.photo) {
+        return `<span class="runner-chip"><img src="${toDirectUrl(s.photo)}" onerror="this.parentNode.innerHTML='<span class=\\'runner-chip-fallback\\'>${name[0]}</span>'"></span>`;
+    }
+    return `<span class="runner-chip" style="background:${s.color}"><span class="runner-chip-fallback" style="color:white">${name[0]}</span></span>`;
+}
+
+function renderLevels() {
+    document.getElementById('levelsList').innerHTML = LEVELS.map(lv => {
+        const data    = requests[lv.key] || { runner:'', items:[] };
+        const total   = data.items.length;
+        const done    = data.items.filter(i=>i.done).length;
+        const pending = total - done;
+        const allDone = total > 0 && pending === 0;
+        const chip    = data.runner ? miniAvatar(data.runner) : '';
+
+        return `
+        <div class="level-card" data-level="${lv.key}" onclick="toggleCard('${lv.key}')">
+            <div class="level-header">
+                <div class="level-info">
+                    <div class="level-badge-wrap">
+                        <div class="level-badge ${lv.cls}">${lv.abbr}</div>
+                        ${total > 0 ? `<div class="notif-badge ${allDone?'all-done':''}">${allDone?'✓':pending}</div>` : ''}
+                    </div>
+                    <div class="level-meta">
+                        <h3>${lv.label}</h3>
+                        <p>${chip}${data.runner||'Unassigned'}${total ? ` &nbsp;•&nbsp; ${done}/${total}` : ''}</p>
+                    </div>
+                </div>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </div>
+            <div class="item-list">${renderItemRows(lv.key, data.items)}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderItemRows(level, list) {
+    if (!list.length) return `<div class="empty-state"><div class="empty-icon">📋</div>No requests yet</div>`;
+    const isSv = currentRole === 'supervisor';
+    return list.map(item => `
+        <div class="item-row ${item.done?'done':''} ${isSv?'clickable':''}"
+             onclick="${isSv?`event.stopPropagation();toggleDone('${level}',${item.id})`:''}">
+            <div class="item-check ${isSv?'':'readonly'}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <div class="item-info">
+                <div class="item-name">${item.name}</div>
+                <div class="item-sub">${item.code} &nbsp;·&nbsp; ${item.addedBy||'?'}</div>
+            </div>
+            <div class="item-qty">${item.qty} ${item.unit}</div>
+        </div>`).join('');
+}
+
+function toggleCard(level) {
+    document.querySelector(`.level-card[data-level="${level}"]`).classList.toggle('open');
+}
+
+async function toggleDone(level, itemId) {
+    const item = requests[level].items.find(i=>i.id===itemId);
+    if (!item) return;
+    item.done = !item.done;
+    renderLevels(); updateProgress(); saveLocal();
+    toast(item.done ? '✓ Marked done' : 'Unmarked');
+
+    if (!CFG.DEMO) {
+        try {
+            await fetch(CFG.SCRIPT_URL, { method:'POST', body:JSON.stringify({ action:'markDone', level, itemCode:item.code, done:item.done }) });
+        } catch(e) { console.warn('Sync fail', e); }
+    }
+}
+
+function updateProgress() {
+    let total=0, done=0;
+    Object.values(requests).forEach(lv => { total+=lv.items.length; done+=lv.items.filter(i=>i.done).length; });
+    document.getElementById('progressBadge').textContent = `${done}/${total}`;
+}
+
+function renderAlerts() {
+    if (currentRole !== 'supervisor') return;
+    const low = items.filter(i=>i.stock<=i.minStock);
+    const card = document.getElementById('stockAlert');
+    const list = document.getElementById('alertList');
+    if (!low.length) { card.classList.add('hidden'); return; }
+    card.classList.remove('hidden');
+    list.innerHTML = low.slice(0,6).map(i=>`
+        <div class="alert-item">
+            <span class="alert-item-name">${i.name}</span>
+            <span class="alert-item-qty ${i.stock===0?'critical':'low'}">${i.stock} ${i.unit}</span>
+        </div>`).join('');
+}
+
+function renderMyRequests() {
+    const mine = [];
+    Object.entries(requests).forEach(([level,data]) => {
+        data.items.forEach(item => { if(item.addedBy===currentUser) mine.push({...item,level}); });
+    });
+    document.getElementById('myCount').textContent = mine.length;
+    const cls  = { '1':'lb-l1','2':'lb-l2','3':'lb-l3','4':'lb-l4','public':'lb-lp' };
+    const abbr = { '1':'L1','2':'L2','3':'L3','4':'L4','public':'PA' };
+    document.getElementById('myRequests').innerHTML = mine.length
+        ? mine.map(i => {
+            const canEdit = !i.done;
+            return `
+            <div class="req-row ${i.done?'req-done':''}">
+                <div class="req-info">
+                    <div class="req-lvl ${cls[i.level]}">${abbr[i.level]}</div>
+                    <div class="req-text">
+                        <h4>${i.name}</h4>
+                        <p>${i.done ? '✓ Done — cannot edit' : 'Pending'}</p>
+                    </div>
+                </div>
+                <div class="req-qty">${i.qty}</div>
+                ${canEdit ? `
+                <div class="req-actions">
+                    <button class="req-btn req-edit" onclick="openEditModal('${i.level}',${i.id})">✏️</button>
+                    <button class="req-btn req-del"  onclick="confirmDelete('${i.level}',${i.id},'${i.name}')">🗑</button>
+                </div>` : ''}
+            </div>`;
+        }).join('')
+        : '<div class="empty-state"><div class="empty-icon">📝</div>No requests yet</div>';
+}
+
+function renderWater() {
+    if (currentRole !== 'supervisor') return;
+    const total = (water.level1||0)+(water.level2||0)+(water.level3||0)+(water.level4||0);
+    document.getElementById('waterGrid').innerHTML = `
+        <div class="water-cell"><span class="water-cell-name">Level 1</span><span class="water-cell-qty">${water.level1||'–'}</span></div>
+        <div class="water-cell"><span class="water-cell-name">Level 2</span><span class="water-cell-qty">${water.level2||'–'}</span></div>
+        <div class="water-cell"><span class="water-cell-name">Level 3</span><span class="water-cell-qty">${water.level3||'–'}</span></div>
+        <div class="water-cell"><span class="water-cell-name">Level 4</span><span class="water-cell-qty">${water.level4||'–'}</span></div>
+        <div class="water-cell total"><span class="water-cell-name">Total Today</span><span class="water-cell-qty">${total}</span></div>`;
+}
+
+function renderStock() {
+    const list = document.getElementById('stockList');
+    if (!list || currentRole !== 'supervisor') return;
+    list.innerHTML = items.length
+        ? items.map(i=>`
+            <div class="stock-row">
+                <div class="stock-info"><h4>${i.name}</h4><p>${i.code}</p></div>
+                <span class="alert-item-qty ${i.stock===0?'critical':(i.stock<=i.minStock?'low':'')}">${i.stock} ${i.unit}</span>
+            </div>`).join('')
+        : '<div class="empty-state">No items loaded</div>';
+}
+
+// =============================================
+// SUBMIT REQUEST
+// =============================================
+async function submitRequest() {
+    const level    = document.getElementById('formLevel').value;
+    const itemCode = document.getElementById('formItem').value;
+    const qty      = parseInt(document.getElementById('formQty').value);
+    if (!level || !itemCode || !qty) { toast('Fill all fields', true); return; }
+
+    const itemData = items.find(i=>i.code===itemCode);
+    const newItem  = { id:Date.now(), code:itemCode, name:itemData.name, qty, unit:itemData.unit.toLowerCase(), done:false, addedBy:currentUser };
+
+    if (!requests[level]) requests[level] = { runner:'', items:[] };
+    requests[level].items.push(newItem);
+    if (!requests[level].runner) requests[level].runner = currentUser;
+
+    renderAll(); saveLocal(); toast('Request added ✓');
+    document.getElementById('formItem').value = '';
+    document.getElementById('formQty').value  = '';
+
+    // Lock the level after first item added
+    lockLevel(level);
+
+    // Show Save button once at least one request exists
+    document.getElementById('saveAndGoBtn').classList.remove('hidden');
+
+    if (!CFG.DEMO) {
+        try {
+            await fetch(CFG.SCRIPT_URL, { method:'POST', body:JSON.stringify({ action:'addRequest', level, runner:currentUser, itemCode, itemName:itemData.name, qty, unit:itemData.unit, addedBy:currentUser }) });
+        } catch(e) { console.warn('Sync fail', e); }
+    }
+}
+
+// =============================================
+// STAFF PHOTO — camera / gallery / URL
+// =============================================
+let _smPhotoData = ''; // base64 data URL or Drive URL
+
+function triggerPhotoPicker(useCamera) {
+    const inp = document.getElementById('smPhotoFile');
+    // Toggle capture attribute based on camera vs gallery
+    if (useCamera) {
+        inp.setAttribute('capture', 'environment');
+    } else {
+        inp.removeAttribute('capture');
+    }
+    inp.value = ''; // reset so same file can be re-picked
+    inp.click();
+}
+
+function handlePhotoFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Compress + convert to base64
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // Resize to max 300×300 for storage efficiency
+            const canvas = document.createElement('canvas');
+            const MAX = 300;
+            let w = img.width, h = img.height;
+            if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } }
+            else        { if (h > MAX) { w = w * MAX / h; h = MAX; } }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+            setPhotoData(dataUrl);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function onPhotoUrlInput() {
+    const val = document.getElementById('smPhoto').value.trim();
+    if (val) {
+        _smPhotoData = val;
+        showPhotoPreview(toDirectUrl(val));
+    } else {
+        _smPhotoData = '';
+        hidePhotoPreview();
+    }
+    updateStaffModalAvatar();
+}
+
+function setPhotoData(dataUrl) {
+    _smPhotoData = dataUrl;
+    document.getElementById('smPhoto').value = ''; // clear URL field — using file instead
+    showPhotoPreview(dataUrl);
+    updateStaffModalAvatar();
+}
+
+function showPhotoPreview(src) {
+    const wrap = document.getElementById('smPhotoPreview');
+    wrap.classList.remove('hidden');
+    wrap.style.display = 'inline-block';
+    document.getElementById('smPhotoPreviewImg').src = src;
+}
+
+function hidePhotoPreview() {
+    const wrap = document.getElementById('smPhotoPreview');
+    wrap.classList.add('hidden');
+    wrap.style.display = 'none';
+}
+
+function removePhoto() {
+    _smPhotoData = '';
+    document.getElementById('smPhoto').value = '';
+    hidePhotoPreview();
+    updateStaffModalAvatar();
+}
+
+// =============================================
+// STAFF MANAGEMENT
+// =============================================
+let _smEditName = null; // null = new staff
+
+function renderStaffMgmt() {
+    const list = document.getElementById('staffMgmtList');
+    if (!list) return;
+    list.innerHTML = staffList.map(s => {
+        const isSelf = s.name === currentUser;
+        const avatarBg = s.color || '#444';
+        const avatarContent = s.photo
+            ? `<img src="${toDirectUrl(s.photo)}" onerror="this.parentNode.style.background='${avatarBg}';this.parentNode.innerHTML='${s.name[0]}';">`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:${avatarBg};color:white;font-weight:700;font-size:16px;">${s.name[0]}</div>`;
+        return `
+        <div class="staff-mgmt-card">
+            <div class="staff-mgmt-avatar">${avatarContent}</div>
+            <div class="staff-mgmt-info">
+                <div class="staff-mgmt-name">${s.name} ${isSelf ? '<span style="font-size:15px;background:rgba(0,229,184,0.15);color:var(--accent);padding:2px 7px;border-radius:5px;font-weight:700;">YOU</span>' : ''}</div>
+                <div class="staff-mgmt-role ${s.role === 'supervisor' ? 'sv' : 'st'}">${s.role === 'supervisor' ? '⭐ Supervisor' : '🛏 Room Attendant'}</div>
+                ${s.quota ? `<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Quota: <b style="color:var(--text-secondary);font-family:'JetBrains Mono',monospace;">${s.quota}</b> rooms/month</div>` : ''}
+            </div>
+            <div class="staff-mgmt-actions">
+                <button class="staff-mgmt-btn smb-edit" onclick="openStaffModal('${s.name}')">✏️</button>
+                ${!isSelf ? `<button class="staff-mgmt-btn smb-del" onclick="confirmStaffDelete('${s.name}')">🗑</button>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function openStaffModal(name) {
+    _smEditName = name;
+    const isNew = !name;
+    const s = name ? staffList.find(x => x.name === name) : null;
+
+    document.getElementById('staffModalTitle').textContent = isNew ? 'Add New Staff' : 'Edit Staff';
+    document.getElementById('smName').value        = s ? s.name  : '';
+    document.getElementById('smName').disabled     = !isNew;
+    document.getElementById('smPin').value         = '';
+    document.getElementById('smPinConfirm').value  = '';
+    document.getElementById('smPhoto').value       = '';
+    document.getElementById('smPinLabel').textContent = isNew ? 'PIN (4 digits)' : 'New PIN (leave blank to keep current)';
+
+    // Photo
+    _smPhotoData = s ? (s.photo || '') : '';
+    if (_smPhotoData) {
+        showPhotoPreview(_smPhotoData.startsWith('data:') ? _smPhotoData : toDirectUrl(_smPhotoData));
+        if (!_smPhotoData.startsWith('data:')) document.getElementById('smPhoto').value = _smPhotoData;
+    } else {
+        hidePhotoPreview();
+    }
+
+    document.getElementById('smQuota').value = s ? (s.quota || '') : '';
+    setStaffRole(s ? s.role : 'staff');
+    updateStaffModalAvatar();
+    document.getElementById('staffModal').classList.remove('hidden');
+}
+
+function closeStaffModal() {
+    document.getElementById('staffModal').classList.add('hidden');
+    _smEditName  = null;
+    _smPhotoData = '';
+    hidePhotoPreview();
+}
+
+function setStaffRole(role) {
+    document.getElementById('smRoleStaff').classList.toggle('active', role === 'room_attendant');
+    document.getElementById('smRoleSv').classList.toggle('active',    role === 'supervisor');
+    document.getElementById('smRoleStaff').dataset.val = 'staff';
+    document.getElementById('smRoleSv').dataset.val    = 'supervisor';
+}
+
+function getSelectedRole() {
+    return document.getElementById('smRoleSv').classList.contains('active') ? 'supervisor' : 'staff';
+}
+
+function togglePinVis(inputId, btnId) {
+    const inp = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    if (inp.type === 'password') { inp.type = 'text';     btn.textContent = '🙈'; }
+    else                         { inp.type = 'password'; btn.textContent = '👁';  }
+}
+
+function updateStaffModalAvatar() {
+    const name  = document.getElementById('smName').value.trim();
+    const slot  = document.getElementById('staffModalAvatar');
+    const color = AVATAR_COLORS[(staffList.length) % AVATAR_COLORS.length];
+    if (_smPhotoData) {
+        const src = _smPhotoData.startsWith('data:') ? _smPhotoData : toDirectUrl(_smPhotoData);
+        slot.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;"
+            onerror="this.parentNode.innerHTML='<span style=\\'font-size:26px;font-weight:700;color:white;\\'>${name?name[0]:'?'}</span>'">`;
+        slot.style.background = color;
+    } else if (name) {
+        slot.style.background = color;
+        slot.innerHTML = `<span style="font-size:26px;font-weight:700;color:white;">${name[0]}</span>`;
+    } else {
+        slot.style.background = '';
+        slot.innerHTML = '👤';
+    }
+}
+
+async function saveStaffMember() {
+    const isNew = !_smEditName;
+    const name  = document.getElementById('smName').value.trim().toUpperCase();
+    const role  = getSelectedRole();
+    const pin   = document.getElementById('smPin').value.trim();
+    const pinC  = document.getElementById('smPinConfirm').value.trim();
+    const urlField = document.getElementById('smPhoto').value.trim();
+    const quota    = parseInt(document.getElementById('smQuota').value) || 0;
+
+    // Validate
+    if (!name) { toast('Name is required', true); return; }
+    if (isNew && !pin) { toast('PIN is required for new staff', true); return; }
+    if (pin && pin.length !== 4) { toast('PIN must be exactly 4 digits', true); return; }
+    if (pin && !/^\d{4}$/.test(pin)) { toast('PIN must be numbers only', true); return; }
+    if (pin && pin !== pinC) { toast('PINs do not match', true); return; }
+    if (isNew && staffList.find(s => s.name === name)) { toast('Staff name already exists', true); return; }
+
+    // Step 1: upload photo to Drive if we have a new base64 image
+    let photo = urlField; // default: use typed URL as-is
+    if (_smPhotoData && _smPhotoData.startsWith('data:')) {
+        if (CFG.DEMO) {
+            // In demo mode keep base64 locally
+            photo = _smPhotoData;
+        } else {
+            photo = await uploadPhotoToDrive(name, _smPhotoData);
+            if (!photo) return; // upload failed, error already shown
+        }
+    } else if (_smPhotoData) {
+        photo = _smPhotoData; // already a URL
+    }
+
+    // Step 2: optimistic local update
+    if (isNew) {
+        staffList.push({ name, role, pin, photo, quota, color: AVATAR_COLORS[staffList.length % AVATAR_COLORS.length] });
+    } else {
+        const s = staffList.find(x => x.name === _smEditName);
+        if (s) { s.role = role; s.photo = photo; s.quota = quota; if (pin) s.pin = pin; }
+    }
+
+    closeStaffModal();
+    renderStaffMgmt();
+    toast(isNew ? 'Staff added ✓' : 'Updated ✓');
+
+    // Step 3: sync text fields to Sheet (photo URL already stored in Drive)
+    if (!CFG.DEMO) {
+        try {
+            await fetch(CFG.SCRIPT_URL, { method:'POST', body: JSON.stringify({
+                action: isNew ? 'addStaff' : 'updateStaff',
+                name, role, photo, quota,
+                ...(pin ? { pin } : {}),
+                ...(isNew ? {} : { originalName: _smEditName })
+            })});
+        } catch(e) { console.warn('Staff sync fail', e); }
+    }
+}
+
+async function uploadPhotoToDrive(staffName, dataUrl) {
+    // Show upload progress overlay
+    showUploadProgress('Uploading photo…');
+    try {
+        // Strip the data:image/jpeg;base64, prefix
+        const [meta, base64] = dataUrl.split(',');
+        const mimeType = (meta.match(/:(.*?);/) || [])[1] || 'image/jpeg';
+
+        const res = await fetch(CFG.SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action:   'uploadPhoto',
+                staffName,
+                base64,
+                mimeType,
+            })
+        });
+        const data = await res.json();
+        hideUploadProgress();
+
+        if (data.error) { toast('Photo upload failed: ' + data.error, true); return null; }
+        return data.url || '';
+    } catch(e) {
+        hideUploadProgress();
+        toast('Photo upload failed — check connection', true);
+        console.error('Upload error', e);
+        return null;
+    }
+}
+
+function showUploadProgress(msg) {
+    document.getElementById('uploadProgressMsg').textContent = msg;
+    document.getElementById('uploadProgressOverlay').classList.remove('hidden');
+}
+function hideUploadProgress() {
+    document.getElementById('uploadProgressOverlay').classList.add('hidden');
+}
+
+function confirmStaffDelete(name) {
+    if (name === currentUser) { toast("You can't delete yourself", true); return; }
+    document.getElementById('staffDeleteMsg').textContent =
+        `Remove "${name}" from the system? They will no longer be able to log in.`;
+    document.getElementById('staffDeleteDialog').classList.remove('hidden');
+    document.getElementById('staffDeleteYes').onclick = () => executeStaffDelete(name);
+}
+
+function closeStaffDelete() {
+    document.getElementById('staffDeleteDialog').classList.add('hidden');
+}
+
+async function executeStaffDelete(name) {
+    closeStaffDelete();
+    staffList = staffList.filter(s => s.name !== name);
+    renderStaffMgmt();
+    toast('Staff removed');
+
+    if (!CFG.DEMO) {
+        try {
+            await fetch(CFG.SCRIPT_URL, { method:'POST', body: JSON.stringify({ action:'deleteStaff', name }) });
+        } catch(e) { console.warn('Staff delete sync fail', e); }
+    }
+}
+
+// =============================================
+// LEVEL LOCK
+// =============================================
+const LEVEL_LABELS = { '1':'Level 1', '2':'Level 2', '3':'Level 3', '4':'Level 4', 'public':'Public Area' };
+
+function lockLevel(level) {
+    document.getElementById('levelSelectWrap').classList.add('hidden');
+    const badge = document.getElementById('levelLockedBadge');
+    badge.classList.remove('hidden');
+    badge.style.display = 'flex';
+    document.getElementById('levelLockedLabel').textContent = LEVEL_LABELS[level] || level;
+}
+
+function unlockLevel() {
+    // Only allow unlock if no items added for this level yet
+    const level = document.getElementById('formLevel').value;
+    const hasItems = requests[level]?.items.some(i => i.addedBy === currentUser);
+    if (hasItems) {
+        toast('Delete your requests first before changing level', true);
+        return;
+    }
+    document.getElementById('levelLockedBadge').classList.add('hidden');
+    document.getElementById('levelSelectWrap').classList.remove('hidden');
+    document.getElementById('formLevel').value = '';
+}
+
+// =============================================
+// EDIT & DELETE REQUESTS
+// =============================================
+let _editLevel = null, _editId = null;
+let _deleteLevel = null, _deleteId = null;
+
+function openEditModal(level, id) {
+    const item = requests[level]?.items.find(i => i.id === id);
+    if (!item) return;
+    _editLevel = level; _editId = id;
+    document.getElementById('editModalTitle').textContent = 'Edit Request';
+    document.getElementById('editModalSub').textContent   = item.name + ' — Level ' + (level === 'public' ? 'Public Area' : level);
+    document.getElementById('editQtyInput').value         = item.qty;
+    document.getElementById('editModal').classList.remove('hidden');
+    setTimeout(() => document.getElementById('editQtyInput').focus(), 100);
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+    _editLevel = null; _editId = null;
+}
+
+async function saveEdit() {
+    const qty = parseInt(document.getElementById('editQtyInput').value);
+    if (!qty || qty < 1) { toast('Enter a valid quantity', true); return; }
+    const item = requests[_editLevel]?.items.find(i => i.id === _editId);
+    if (!item) return;
+    item.qty = qty;
+    closeEditModal();
+    renderAll(); saveLocal(); toast('Updated ✓');
+
+    if (!CFG.DEMO) {
+        try {
+            await fetch(CFG.SCRIPT_URL, { method:'POST', body: JSON.stringify({
+                action: 'editRequest', level: _editLevel, itemCode: item.code, qty
+            })});
+        } catch(e) { console.warn('Sync fail', e); }
+    }
+}
+
+function confirmDelete(level, id, name) {
+    _deleteLevel = level; _deleteId = id;
+    document.getElementById('confirmDialogMsg').textContent =
+        `Remove "${name}" from Level ${level === 'public' ? 'Public Area' : level}? This cannot be undone.`;
+    document.getElementById('confirmDialog').classList.remove('hidden');
+    document.getElementById('confirmYesBtn').onclick = executeDelete;
+}
+
+function closeConfirm() {
+    document.getElementById('confirmDialog').classList.add('hidden');
+    _deleteLevel = null; _deleteId = null;
+}
+
+async function executeDelete() {
+    const level = _deleteLevel, id = _deleteId;
+    closeConfirm();
+    if (!requests[level]) return;
+    const idx = requests[level].items.findIndex(i => i.id === id);
+    if (idx === -1) return;
+    const item = requests[level].items[idx];
+    requests[level].items.splice(idx, 1);
+    renderAll(); saveLocal(); toast('Deleted');
+
+    // Hide save button if no requests left
+    const mine = Object.values(requests).flatMap(l => l.items).filter(i => i.addedBy === currentUser);
+    if (!mine.length) document.getElementById('saveAndGoBtn').classList.add('hidden');
+
+    if (!CFG.DEMO) {
+        try {
+            await fetch(CFG.SCRIPT_URL, { method:'POST', body: JSON.stringify({
+                action: 'deleteRequest', level, itemCode: item.code
+            })});
+        } catch(e) { console.warn('Sync fail', e); }
+    }
+}
+
+// =============================================
+// TABS
+// =============================================
+function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab===name));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    const el = document.getElementById(name+'Tab');
+    if (el) el.classList.add('active');
+    if (name==='stock')     renderStock();
+    if (name==='checklist') renderChecklistTab();
+}
+
+// =============================================
+// SYNC
+// =============================================
+function saveLocal() { localStorage.setItem('eq_requests', JSON.stringify(requests)); }
+
+async function syncNow() {
+    const dot = document.getElementById('syncDot'), txt = document.getElementById('syncText');
+    dot.classList.add('syncing'); txt.textContent = 'Syncing…';
+    await loadData();
+    dot.classList.remove('syncing');
+}
+
+function hardReload() {
+    // Clear all app caches then force full page reload
+    localStorage.removeItem('eq_requests');
+    window.location.href = window.location.href.split('?')[0] + '?v=' + Date.now();
+}
+
+function updateOnlineStatus() {
+    const dot = document.getElementById('syncDot'), txt = document.getElementById('syncText');
+    if (!dot) return;
+    if (navigator.onLine) { dot.classList.remove('offline'); txt.textContent = 'Online'; }
+    else { dot.classList.add('offline'); txt.textContent = 'Offline'; }
+}
+
+// =============================================
+// HELPERS
+// =============================================
+function showLoading(show) { document.getElementById('loading').classList.toggle('hidden', !show); }
+
+function toast(msg, isError=false) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.toggle('error', isError);
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// =============================================
+// ROOM DATA
+// =============================================
+const ROOM_DATA = {
+    // Standard Twin
+    104:'ST',105:'ST',106:'ST',107:'ST',108:'ST',109:'ST',110:'ST',112:'ST',122:'ST',126:'ST',130:'ST',132:'ST',
+    204:'ST',205:'ST',206:'ST',207:'ST',208:'ST',209:'ST',210:'ST',212:'ST',214:'ST',218:'ST',222:'ST',226:'ST',230:'ST',232:'ST',
+    304:'ST',305:'ST',306:'ST',307:'ST',308:'ST',309:'ST',310:'ST',312:'ST',314:'ST',318:'ST',322:'ST',326:'ST',330:'ST',332:'ST',
+    404:'ST',405:'ST',406:'ST',407:'ST',408:'ST',409:'ST',410:'ST',412:'ST',414:'ST',418:'ST',422:'ST',426:'ST',430:'ST',
+    // Standard King
+    120:'SK',124:'SK',128:'SK',134:'SK',
+    220:'SK',224:'SK',228:'SK',234:'SK',
+    320:'SK',324:'SK',328:'SK',334:'SK',
+    420:'SK',424:'SK',428:'SK',432:'SK',
+    // Superior Twin
+    111:'SupT',113:'SupT',119:'SupT',123:'SupT',127:'SupT',131:'SupT',133:'SupT',135:'SupT',137:'SupT',
+    211:'SupT',213:'SupT',219:'SupT',223:'SupT',227:'SupT',231:'SupT',
+    311:'SupT',313:'SupT',319:'SupT',323:'SupT',327:'SupT',
+    413:'SupT',419:'SupT',423:'SupT',427:'SupT',
+    // Superior King
+    115:'SupK',117:'SupK',121:'SupK',125:'SupK',129:'SupK',
+    215:'SupK',217:'SupK',221:'SupK',225:'SupK',229:'SupK',
+    315:'SupK',317:'SupK',321:'SupK',325:'SupK',329:'SupK',
+    415:'SupK',417:'SupK',421:'SupK',425:'SupK',429:'SupK',
+    // Family Room
+    101:'FAM-K',102:'FAM-K',201:'FAM-K',202:'FAM-K',
+    401:'FAM-KS',402:'FAM-4S',
+    // Business Suite
+    301:'BS',302:'BS',
+    // Glam Suite
+    235:'GS',331:'GS',333:'GS',431:'GS',433:'GS',
+    // Ligitan Suite
+    688:'LS',
+    // Bakungan Studio
+    689:'BK',
+};
+
+const ROOM_TYPE_NAMES = {
+    'ST':'Standard Twin','SK':'Standard King',
+    'SupT':'Superior Twin','SupK':'Superior King',
+    'FAM-K':'Family Room (King)','FAM-KS':'Family Room (King+Single)','FAM-4S':'Family Room (4 Singles)',
+    'BS':'Business Suite','GS':'Glam Suite','LS':'Ligitan Suite','BK':'Bakungan Studio',
+};
+
+// Bed configs: K = king sheets/duvet, S = single sheets/duvet
+const BED_CONFIG = {
+    'ST':    { K:0, S:2 },
+    'SK':    { K:1, S:0 },
+    'SupT':  { K:0, S:2 },
+    'SupK':  { K:1, S:0 },
+    'FAM-K': { K:1, S:0 },
+    'FAM-KS':{ K:1, S:1 },
+    'FAM-4S':{ K:0, S:4 },
+    'BS':    { K:1, S:0 },
+    'GS':    { K:1, S:0 },
+    'LS':    { K:1, S:0 },
+    'BK':    { K:0, S:2 },
+};
+
+const FLOORS = {
+    1: [101,102,104,105,106,107,108,109,110,111,112,113,115,117,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,137],
+    2: [201,202,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,234,235],
+    3: [301,302,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334],
+    4: [401,402,404,405,406,407,408,409,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433],
+    5: [688,689], // Special floor for suites
+};
+
+const ROOM_STATUSES_1ST  = ['VD','VC','OD','TD','OOO','OOS']; // Staff 1st Status (no OC, no RS)
+const ROOM_STATUSES_LAST_STAFF = ['Ready','OC','OOS'];          // Staff Last Status
+const ROOM_STATUSES_LAST_SUP   = ['VC','OOO','OOS'];            // Supervisor Last Status
+const ROOM_STATUSES = ROOM_STATUSES_1ST; // kept for card badge compatibility
+const STATUS_LABELS = {
+    VD:'Vacant Dirty', VC:'Vacant Clean', OC:'Occupied Clean', OD:'Occupied Dirty',
+    RS:'Refuse Service', TD:'Turned Down', OOO:'Out Of Order', OOS:'Out Of Service',
+    Ready:'Ready',
+};
+
+// Checklist items per section
+const CHECKLIST = {
+    bathroom: [
+        'Round Soap','Shampoo','Shower Gel','Body Lotion','Dental Kit',
+        'Sanitary Bag','Shower Cap','Slipper','Cotton Bud','Comb',
+        'Shaving Kit','Facial Tissue','Tissue Roll',
+    ],
+    stationary: ['Note Pad','Pen','Coaster','Laundry Bag','Guest Comments Card','Guest Preference Card'],
+    coffee: ['Drinking Water','Coffee Nescafe','Tea Bag','Creamer','Brown Sugar','White Sugar'],
+    towels: ['Bath Towel','Hand Towel','Face Towel','Bath Mat','Bath Robe'],
+};
+
+// =============================================
+// CHECKLIST STATE
+// =============================================
+let clFloor         = 1;
+let roomRecords     = {}; // { roomNo: { status, lastStatus, timeIn, timeOut, attendant, checklist, linen, towels, remarks } }
+let activeRoom      = null; // currently open room number
+let modalChecklist  = {}; // working copy while modal is open
+
+// =============================================
+// RENDER CHECKLIST TAB
+// =============================================
+function renderChecklistTab() {
+    const isSv = currentRole === 'supervisor';
+
+    // Floor selector
+    const floorSel = document.getElementById('clFloorSelector');
+    const floorKeys = isSv ? [1,2,3,4,5] : getMyFloors();
+    if (clFloor === null || !floorKeys.includes(clFloor)) clFloor = floorKeys[0];
+
+    floorSel.innerHTML = floorKeys.map(f => `
+        <button class="cl-floor-btn ${clFloor===f?'active':''}" onclick="selectFloor(${f})">
+            ${f === 5 ? 'Suites' : 'Level ' + f}
+        </button>`).join('');
+
+    // Progress
+    const rooms = FLOORS[clFloor] || [];
+    const done  = rooms.filter(r => roomRecords[r]?.timeOut).length;
+    const pct   = rooms.length ? Math.round(done/rooms.length*100) : 0;
+
+    document.getElementById('clRoomGrid').innerHTML = `
+        <div class="cl-progress-bar">
+            <div class="cl-progress-track"><div class="cl-progress-fill" style="width:${pct}%"></div></div>
+            <span class="cl-progress-text">${done}/${rooms.length} Done</span>
+        </div>
+        <div class="cl-room-grid">
+            ${rooms.map(r => renderRoomCard(r)).join('')}
+        </div>`;
+}
+
+function getMyFloors() {
+    // Runner sees the floor their room numbers belong to based on first digit
+    // For now show all floors — supervisor assigns rooms freely
+    return [1,2,3,4,5];
+}
+
+function selectFloor(f) {
+    clFloor = f;
+    renderChecklistTab();
+}
+
+function renderRoomCard(roomNo) {
+    const type       = ROOM_DATA[roomNo] || '?';
+    const rec        = roomRecords[roomNo] || {};
+    const status     = rec.status || '';
+    const lastStatus = rec.lastStatus || '';
+    const isDone     = !!rec.timeOut;
+    const inProg     = !!rec.timeIn && !rec.timeOut;
+    const checkedCount = rec.checklist ? Object.values(rec.checklist).filter(Boolean).length : 0;
+    const totalItems   = CHECKLIST.bathroom.length + CHECKLIST.stationary.length + CHECKLIST.coffee.length + CHECKLIST.towels.length;
+
+    const attendantChip = rec.attendant ? `
+        <div class="cl-room-attendant">
+            <div class="cl-room-mini-avatar" style="background:${getStaffColor(rec.attendant)}">${rec.attendant[0]}</div>
+            <span>${rec.attendant}</span>
+        </div>` : '';
+
+    // Fix 2: Show lastStatus badge prominently once done
+    const LAST_COLORS = { READY:'#00e096', OOS:'#ff6b6b', OOO:'#ffd700', OC:'#a0a0c0' };
+    const lastBadge = isDone && lastStatus ? `
+        <div style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:800;
+            letter-spacing:0.5px;margin-top:4px;
+            background:${LAST_COLORS[lastStatus]||'#555'}22;
+            color:${LAST_COLORS[lastStatus]||'#aaa'};
+            border:1.5px solid ${LAST_COLORS[lastStatus]||'#555'}55;">
+            ${lastStatus}
+        </div>` : '';
+
+    return `
+    <div class="cl-room-card ${isDone?'done':(inProg?'in-progress':'')}" onclick="openRoomModal(${roomNo})">
+        <div class="cl-room-no">${roomNo}</div>
+        <div class="cl-room-type">${ROOM_TYPE_NAMES[type]||type}</div>
+        ${!isDone ? `<div class="cl-room-status cl-status-${status||'none'}">${status||'–'}</div>` : ''}
+        ${lastBadge}
+        ${attendantChip}
+        ${!isDone && checkedCount > 0 ? `<div class="cl-checklist-pct">${checkedCount}/${totalItems}</div>` : ''}
+    </div>`;
+}
+
+function getStaffColor(name) {
+    const s = staffList.find(x => x.name === name);
+    return s ? s.color.split(',')[0].replace('linear-gradient(135deg','').replace('(','') : '#888';
+}
+
+// =============================================
+// ROOM MODAL
+// =============================================
+function openRoomModal(roomNo) {
+    activeRoom = roomNo;
+    const type = ROOM_DATA[roomNo] || '?';
+    const rec  = roomRecords[roomNo] || {};
+
+    // Deep copy record as working state
+    modalChecklist = {
+        status:     rec.status     || '',
+        lastStatus: rec.lastStatus || '',
+        cleanType:  rec.cleanType  || '',
+        timeIn:     rec.timeIn     || '',
+        timeOut:    rec.timeOut    || '',
+        attendant:  rec.attendant  || currentUser,
+        checklist:  { ...(rec.checklist || {}) },
+        linen:      { ...(rec.linen     || {}) },
+        towels:     { ...(rec.towels    || {}) },
+        remarks:    rec.remarks    || '',
+    };
+
+    document.getElementById('modalRoomNo').textContent   = 'Room ' + roomNo;
+    document.getElementById('modalRoomType').textContent = ROOM_TYPE_NAMES[type] || type;
+    updateModalStatusBadge();
+    renderModalBody();
+
+    document.getElementById('roomModal').classList.remove('hidden');
+    document.getElementById('app').style.display = 'none';
+}
+
+function closeRoomModal() {
+    document.getElementById('roomModal').classList.add('hidden');
+    document.getElementById('app').style.display = '';
+    activeRoom = null;
+}
+
+function updateModalStatusBadge() {
+    const badge = document.getElementById('modalStatusBadge');
+    const s  = modalChecklist.status     || '';
+    const ls = modalChecklist.lastStatus || '';
+    if (ls) {
+        badge.textContent = `${s||'–'} → ${ls}`;
+        badge.style.fontSize = '10px';
+    } else {
+        badge.textContent = s || '–';
+        badge.style.fontSize = '';
+    }
+    badge.className = `cl-room-status cl-status-${s||'none'}`;
+}
+
+function renderModalBody() {
+    const roomNo  = activeRoom;
+    const type    = ROOM_DATA[roomNo] || '?';
+    const beds    = BED_CONFIG[type]  || { K:0, S:0 };
+    const rec     = modalChecklist;
+    const hasStatus = !!rec.status;
+
+    // Build linen rows
+    const linenRows = [];
+    if (beds.K > 0) {
+        linenRows.push({ key:'sheet_K',  label:`Bed Sheet (King)` });
+        linenRows.push({ key:'duvet_K',  label:`Duvet Cover (King)` });
+        linenRows.push({ key:'runner_K', label:`Bed Runner (King)` });
+    }
+    if (beds.S > 0) {
+        linenRows.push({ key:'sheet_S',  label:`Bed Sheet (Single×${beds.S})` });
+        linenRows.push({ key:'duvet_S',  label:`Duvet Cover (Single×${beds.S})` });
+    }
+    linenRows.push({ key:'pillow', label:'Pillow Case' });
+
+    const isSupervisor = currentRole === 'supervisor';
+
+    // ── Top section: 1st Status + Time only ───────────────────────────
+    const statusHtml = `
+    <!-- Time chips -->
+    <div class="cl-time-row">
+        <div class="cl-time-chip">
+            <label>Time In</label>
+            <span>${rec.timeIn || '–'}</span>
+        </div>
+        <div class="cl-time-chip">
+            <label>Time Out</label>
+            <span>${rec.timeOut || '–'}</span>
+        </div>
+    </div>
+
+    <!-- 1st Status — full width -->
+    <div style="margin-bottom:4px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+            color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">
+            1st Status
+            ${!hasStatus && !isSupervisor ? `<span style="background:var(--danger);color:white;font-size:9px;font-weight:800;
+                padding:2px 6px;border-radius:4px;letter-spacing:0.5px;">Required</span>` : ''}
+        </label>
+        ${isSupervisor
+            ? `<div style="background:var(--bg-elevated);border:1px solid rgba(255,255,255,0.06);
+                border-radius:var(--radius);padding:12px 14px;font-size:15px;font-weight:600;
+                color:${rec.status ? 'var(--text)' : 'var(--text-muted)'};">
+                ${rec.status ? `${rec.status} — ${STATUS_LABELS[rec.status]||rec.status}` : '— not set —'}
+               </div>`
+            : `<div class="select-wrap" style="${!hasStatus?'box-shadow:0 0 0 2px var(--danger);border-radius:var(--radius);':''}">
+                <select class="form-select" onchange="setModalStatus(this.value)"
+                    style="${!hasStatus?'border-color:var(--danger);color:var(--danger);':''}">
+                    <option value="">— Select —</option>
+                    ${ROOM_STATUSES_1ST.map(s=>`<option value="${s}" ${rec.status===s?'selected':''}>${s} — ${STATUS_LABELS[s]}</option>`).join('')}
+                </select>
+               </div>`
+        }
+    </div>`;
+
+    // ── Gate 1: No status yet → show lock ─────────────────────────────
+    if (!hasStatus && !isSupervisor) {
+        document.getElementById('modalBody').innerHTML = statusHtml + `
+        <div style="margin-top:20px;background:var(--bg-elevated);
+            border:1.5px dashed rgba(255,255,255,0.08);border-radius:var(--radius-lg);
+            padding:36px 24px;text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;opacity:0.4;">🔒</div>
+            <div style="font-size:15px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">
+                Select 1st Status to continue
+            </div>
+        </div>`;
+        document.getElementById('modalStartBtn').disabled = true;
+        document.getElementById('modalDoneBtn').disabled  = true;
+        return;
+    }
+
+    // ── Gate 2: Status set but not started yet → show start prompt ────
+    if (!rec.timeIn && !isSupervisor) {
+        document.getElementById('modalBody').innerHTML = statusHtml + `
+        <div style="margin-top:20px;background:var(--bg-elevated);
+            border:1.5px dashed rgba(255,255,255,0.1);border-radius:var(--radius-lg);
+            padding:36px 24px;text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">⏱</div>
+            <div style="font-size:15px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">
+                Press <b style="color:var(--warning)">Start</b> to begin cleaning
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);line-height:1.6;">
+                Checklist will unlock once you start.
+            </div>
+        </div>`;
+        document.getElementById('modalStartBtn').disabled = false;
+        document.getElementById('modalStartBtn').textContent = '⏱ Start';
+        document.getElementById('modalStartBtn').style.background = 'linear-gradient(135deg,var(--warning),#e8930a)';
+        document.getElementById('modalDoneBtn').disabled = true;
+        return;
+    }
+
+    // ── Last Status block (bottom, compulsory) ────────────────────────
+    const hasLastStatus = !!rec.lastStatus;
+    const lastStatusHtml = `
+    <div class="cl-section cl-last-status-block" style="margin-bottom:90px;
+        ${!hasLastStatus ? 'border-color:rgba(255,107,107,0.4);box-shadow:0 0 0 2px rgba(255,107,107,0.2);' : ''}">
+        <div class="cl-section-header" style="background:${!hasLastStatus?'rgba(255,107,107,0.08)':'rgba(0,224,150,0.06)'};
+            border-bottom:1px solid ${!hasLastStatus?'rgba(255,107,107,0.2)':'rgba(0,224,150,0.15)'};cursor:default;">
+            <span class="cl-section-title">
+                <span class="cl-section-icon">${hasLastStatus ? '✅' : '⚠️'}</span>
+                Last Status
+            </span>
+            ${!hasLastStatus ? `<span style="background:var(--danger);color:white;font-size:10px;font-weight:800;
+                padding:3px 8px;border-radius:4px;letter-spacing:0.5px;">Required to Done</span>` :
+                `<span style="background:rgba(0,224,150,0.15);color:var(--success);font-size:13px;font-weight:700;
+                padding:3px 8px;border-radius:4px;">${rec.lastStatus}</span>`}
+        </div>
+        <div style="padding:14px 15px;">
+            <div class="select-wrap" style="${!hasLastStatus?'box-shadow:0 0 0 2px var(--danger);border-radius:var(--radius);':''}">
+                <select class="form-select" onchange="setModalLastStatus(this.value)"
+                    style="font-size:15px;font-weight:600;${!hasLastStatus?'border-color:var(--danger);':'border-color:var(--success);color:var(--success);'}">
+                    <option value="">— Select Last Status —</option>
+                    ${(isSupervisor ? ROOM_STATUSES_LAST_SUP : ROOM_STATUSES_LAST_STAFF)
+                        .map(s=>`<option value="${s}" ${rec.lastStatus===s?'selected':''}>${s}${STATUS_LABELS[s]?' — '+STATUS_LABELS[s]:''}</option>`).join('')}
+                </select>
+            </div>
+        </div>
+    </div>`;
+
+    // ── Full checklist (shown once started) ───────────────────────────
+    const checklistHtml = `
+    <!-- BED LINEN -->
+    <div class="cl-section" style="margin-top:16px;">
+        <div class="cl-section-header">
+            <span class="cl-section-title"><span class="cl-section-icon">🛏</span> Bed Linen</span>
+        </div>
+        <div class="cl-section-body">
+            <!-- Column headers -->
+            <div style="display:flex;align-items:center;padding:6px 15px 4px;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="flex:1;font-size:15px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Item</span>
+                <span style="width:70px;text-align:center;font-size:15px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:0.5px;">IN</span>
+                <span style="width:70px;text-align:center;font-size:15px;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:0.5px;">OUT</span>
+            </div>
+            ${linenRows.map(row=>`
+                <div class="cl-linen-row">
+                    <span class="cl-linen-label">${row.label}</span>
+                    <div style="width:70px;display:flex;justify-content:center;">
+                        <select class="form-select" style="padding:6px 4px;font-size:15px;text-align:center;width:58px;"
+                            onchange="setLinenIn('${row.key}',this.value)">
+                            ${[0,1,2,3,4,5,6].map(n=>`<option value="${n}" ${Number(rec.linen[row.key+'_in']||0)===n?'selected':''}>${n}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div style="width:70px;display:flex;justify-content:center;">
+                        <select class="form-select" style="padding:6px 4px;font-size:15px;text-align:center;width:58px;"
+                            onchange="setLinenOut('${row.key}',this.value)">
+                            ${[0,1,2,3,4,5,6].map(n=>`<option value="${n}" ${Number(rec.linen[row.key+'_out']||0)===n?'selected':''}>${n}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>`).join('')}
+        </div>
+    </div>
+
+    <!-- TOWELS -->
+    <div class="cl-section">
+        <div class="cl-section-header">
+            <span class="cl-section-title"><span class="cl-section-icon">🛁</span> Towels</span>
+        </div>
+        <div class="cl-section-body">
+            <!-- Column headers -->
+            <div style="display:flex;align-items:center;padding:6px 15px 4px;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="flex:1;font-size:15px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Item</span>
+                <span style="width:70px;text-align:center;font-size:15px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:0.5px;">IN</span>
+                <span style="width:70px;text-align:center;font-size:15px;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:0.5px;">OUT</span>
+            </div>
+            ${CHECKLIST.towels.map(t=>`
+                <div class="cl-linen-row">
+                    <span class="cl-linen-label">${t}</span>
+                    <div style="width:70px;display:flex;justify-content:center;">
+                        <select class="form-select" style="padding:6px 4px;font-size:15px;text-align:center;width:58px;"
+                            onchange="setTowelIn('${t}',this.value)">
+                            ${[0,1,2,3,4,5,6].map(n=>`<option value="${n}" ${Number(rec.towels[t+'_in']||0)===n?'selected':''}>${n}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div style="width:70px;display:flex;justify-content:center;">
+                        <select class="form-select" style="padding:6px 4px;font-size:15px;text-align:center;width:58px;"
+                            onchange="setTowelOut('${t}',this.value)">
+                            ${[0,1,2,3,4,5,6].map(n=>`<option value="${n}" ${Number(rec.towels[t+'_out']||0)===n?'selected':''}>${n}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>`).join('')}
+        </div>
+    </div>
+
+    <!-- BATHROOM AMENITIES -->
+    ${renderCheckSection('🚿', 'Bathroom Amenities', 'bathroom')}
+
+    <!-- STATIONARY -->
+    ${renderCheckSection('📝', 'Stationary', 'stationary')}
+
+    <!-- COFFEE & GANK -->
+    ${renderCheckSection('☕', 'Coffee & Gank', 'coffee')}
+
+    <!-- REMARKS -->
+    <div class="cl-section">
+        <div class="cl-section-header">
+            <span class="cl-section-title"><span class="cl-section-icon">📝</span> Remarks</span>
+        </div>
+        <div class="cl-section-body" style="padding:12px 15px;">
+            <textarea
+                id="remarksInput"
+                placeholder="Enter any notes or remarks here…"
+                onchange="setRemarks(this.value)"
+                style="width:100%;min-height:80px;background:var(--bg-base);
+                    border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius);
+                    color:var(--text);font-family:inherit;font-size:15px;
+                    padding:10px 12px;resize:vertical;line-height:1.5;
+                    box-sizing:border-box;"
+            >${rec.remarks||''}</textarea>
+        </div>
+    </div>
+
+    <!-- LAST STATUS at bottom (compulsory) -->
+    ${lastStatusHtml}
+    `;
+
+    document.getElementById('modalBody').innerHTML = statusHtml + checklistHtml;
+
+    // Supervisor read-only — disable everything except Last Status
+    if (isSupervisor) {
+        document.querySelectorAll('#modalBody select, #modalBody textarea').forEach(el => {
+            el.disabled = true;
+        });
+        const lastSel = document.querySelector('#modalBody select[onchange="setModalLastStatus(this.value)"]');
+        if (lastSel) lastSel.disabled = false;
+    }
+
+    // Start button (always shown as done/green once started)
+    document.getElementById('modalStartBtn').textContent = rec.timeIn ? `✓ ${rec.timeIn}` : '⏱ Start';
+    document.getElementById('modalStartBtn').disabled    = !!rec.timeIn || isSupervisor;
+    document.getElementById('modalStartBtn').style.background = rec.timeIn
+        ? 'linear-gradient(135deg,#2d7a4f,#1e5e3a)'
+        : 'linear-gradient(135deg,var(--warning),#e8930a)';
+
+    // Done requires lastStatus selected
+    const canDone = !!rec.lastStatus;
+    document.getElementById('modalDoneBtn').disabled = !canDone;
+}
+
+function renderCheckSection(icon, title, key) {
+    const items   = CHECKLIST[key];
+    const checked = items.filter(i => modalChecklist.checklist[key+'_'+i]).length;
+    return `
+    <div class="cl-section">
+        <div class="cl-section-header">
+            <span class="cl-section-title"><span class="cl-section-icon">${icon}</span> ${title}</span>
+            <span class="cl-section-count">${checked}/${items.length}</span>
+        </div>
+        <div class="cl-section-body">
+            ${items.map(item => {
+                const ck = key+'_'+item;
+                const isChecked = !!modalChecklist.checklist[ck];
+                return `
+                <div class="cl-check-row ${isChecked?'checked':''}" onclick="toggleCheck('${ck}')">
+                    <div class="cl-checkbox"></div>
+                    <span class="cl-check-label">${item}</span>
+                </div>`;
+            }).join('')}
+        </div>
+    </div>`;
+}
+
+function countLinenDone(linenObj, rows) {
+    return rows.filter(r => linenObj[r.key || r]).length;
+}
+
+function setModalStatus(s) {
+    modalChecklist.status = s;
+    updateModalStatusBadge();
+    renderModalBody();
+}
+
+function setModalLastStatus(s) {
+    modalChecklist.lastStatus = s;
+    updateModalStatusBadge();
+
+    // Update Done button
+    document.getElementById('modalDoneBtn').disabled = !s;
+
+    // Update Last Status block header live (icon, badge, select colour)
+    const block = document.querySelector('.cl-last-status-block');
+    if (!block) return;
+
+    const hdr = block.querySelector('.cl-section-header');
+    const icon = block.querySelector('.cl-section-icon');
+    if (icon) icon.textContent = s ? '✅' : '⚠️';
+
+    // Update badge in header
+    const existingBadge = hdr ? hdr.querySelector('span:last-child') : null;
+    if (hdr && existingBadge && existingBadge !== hdr.querySelector('.cl-section-title')) {
+        existingBadge.textContent = s || '';
+        if (s) {
+            existingBadge.style.cssText = 'background:rgba(0,224,150,0.15);color:var(--success);font-size:13px;font-weight:700;padding:3px 8px;border-radius:4px;';
+        } else {
+            existingBadge.style.cssText = 'background:var(--danger);color:white;font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.5px;';
+            existingBadge.textContent = 'Required to Done';
+        }
+    }
+    // Update block border
+    block.style.borderColor = s ? '' : 'rgba(255,107,107,0.4)';
+    block.style.boxShadow   = s ? '' : '0 0 0 2px rgba(255,107,107,0.2)';
+    if (hdr) hdr.style.background = s ? 'rgba(0,224,150,0.06)' : 'rgba(255,107,107,0.08)';
+    if (hdr) hdr.style.borderBottomColor = s ? 'rgba(0,224,150,0.15)' : 'rgba(255,107,107,0.2)';
+
+    // Update select colour
+    const sel = block.querySelector('select');
+    if (sel) {
+        sel.style.borderColor = s ? 'var(--success)' : 'var(--danger)';
+        sel.style.color       = s ? 'var(--success)' : '';
+        const wrap = sel.closest('.select-wrap');
+        if (wrap) wrap.style.boxShadow = s ? '' : '0 0 0 2px var(--danger)';
+    }
+}
+
+function setModalCleanType(t) {
+    modalChecklist.cleanType = t;
+    renderModalBody();
+}
+
+function setLinenIn(key, val)  { modalChecklist.linen[key+'_in']  = Number(val); }
+function setLinenOut(key, val) { modalChecklist.linen[key+'_out'] = Number(val); }
+function setTowelIn(key, val)  { modalChecklist.towels[key+'_in']  = Number(val); }
+function setTowelOut(key, val) { modalChecklist.towels[key+'_out'] = Number(val); }
+
+function setRemarks(val) {
+    modalChecklist.remarks = val;
+}
+
+// Keep old setLinen/setTowel for any legacy calls
+function setLinen(key, val)  { modalChecklist.linen[key]  = Number(val); }
+function setTowel(key, val)  { modalChecklist.towels[key] = Number(val); }
+
+function toggleCheck(ck) {
+    modalChecklist.checklist[ck] = !modalChecklist.checklist[ck];
+    renderModalBody();
+}
+
+function recordTimeIn() {
+    if (modalChecklist.timeIn) return;
+    const now = new Date();
+    modalChecklist.timeIn  = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    modalChecklist.attendant = currentUser;
+    renderModalBody();
+    toast('⏱ Started!');
+}
+
+async function saveRoomChecklist() {
+    if (!modalChecklist.timeIn) { toast('Tap Start first', true); return; }
+
+    // Capture latest remarks from textarea (in case onchange didn't fire)
+    const remarksEl = document.getElementById('remarksInput');
+    if (remarksEl) modalChecklist.remarks = remarksEl.value;
+
+    // Capture lastStatus from dropdown directly too
+    const lastEl = document.querySelector('#modalBody select[onchange="setModalLastStatus(this.value)"]');
+    if (lastEl) modalChecklist.lastStatus = lastEl.value;
+
+    const now = new Date();
+    modalChecklist.timeOut = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+
+    // Save to local state
+    roomRecords[activeRoom] = { ...modalChecklist };
+
+    // Sync to sheet
+    if (!CFG.DEMO) {
+        try {
+            await fetch(CFG.SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action:     'saveChecklist',
+                    roomNo:     activeRoom,
+                    roomType:   ROOM_TYPE_NAMES[ROOM_DATA[activeRoom]] || '',
+                    floor:      String(activeRoom).startsWith('6') ? 5 : Math.floor(activeRoom/100),
+                    attendant:  modalChecklist.attendant,
+                    status:     modalChecklist.status,
+                    lastStatus: modalChecklist.lastStatus,
+                    cleanType:  modalChecklist.cleanType,
+                    timeIn:     modalChecklist.timeIn,
+                    timeOut:    modalChecklist.timeOut,
+                    checklist:  modalChecklist.checklist,
+                    linen:      modalChecklist.linen,
+                    towels:     modalChecklist.towels,
+                    remarks:    modalChecklist.remarks,
+                })
+            });
+        } catch(e) { console.warn('Checklist sync fail', e); }
+    }
+
+    toast('Room ' + activeRoom + ' ✓ Done!');
+    closeRoomModal();
+    renderChecklistTab();
+}
+
+// Convert Google Drive share link → direct image URL
+function toDirectUrl(url) {
+    if (!url) return '';
+    const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w200`;
+    return url;
+}
+
+// =============================================
+// DASHBOARD
+// =============================================
+
+function renderDashboard() {
+    if (currentRole !== 'supervisor') return;
+
+    const now       = new Date();
+    const todayStr  = now.toISOString().slice(0,10);
+    const monthStr  = todayStr.slice(0,7); // YYYY-MM
+
+    // All completed rooms (today, in-memory)
+    const allDone  = Object.entries(roomRecords).filter(([,r]) => !!r.timeOut);
+    const todayDone = allDone.length;
+
+    // ── 1. Floor Progress ──────────────────────────────────────────────
+    const floors = [1,2,3,4];
+    const floorRows = floors.map(f => {
+        const floorRooms = Object.keys(ROOM_DATA).filter(rNo => {
+            const n = Number(rNo);
+            return String(rNo).startsWith('6') ? f === 5 : Math.floor(n/100) === f;
+        });
+        const total    = floorRooms.length;
+        const done     = floorRooms.filter(rNo => roomRecords[rNo]?.timeOut).length;
+        const inProg   = floorRooms.filter(rNo => roomRecords[rNo]?.timeIn && !roomRecords[rNo]?.timeOut).length;
+        const pct      = total > 0 ? Math.round(done/total*100) : 0;
+        const floorColors = { 1:'var(--l1)', 2:'var(--l2)', 3:'var(--l3)', 4:'var(--l4)' };
+        const col = floorColors[f] || 'var(--accent)';
+        return `
+        <div class="db-floor-row">
+            <div class="db-floor-label" style="color:${col};">Level ${f}</div>
+            <div class="db-floor-bar-wrap">
+                <div class="db-floor-bar-bg">
+                    <div class="db-floor-bar-fill" style="width:${pct}%;background:${col};"></div>
+                </div>
+                <div class="db-floor-stats">
+                    <span style="color:var(--success);font-weight:700;">${done}</span>
+                    <span style="color:var(--text-muted);">/</span>
+                    <span style="color:var(--text-secondary);">${total}</span>
+                    ${inProg > 0 ? `<span style="color:var(--warning);font-size:11px;margin-left:4px;">${inProg} in progress</span>` : ''}
+                </div>
+            </div>
+            <div class="db-floor-pct" style="color:${col};">${pct}%</div>
+        </div>`;
+    }).join('');
+
+    // ── 2. Room Status Summary ─────────────────────────────────────────
+    const statusCounts = {};
+    let pending = 0;
+    Object.keys(ROOM_DATA).forEach(rNo => {
+        const rec = roomRecords[rNo];
+        if (!rec || !rec.timeIn) { pending++; return; }
+        if (rec.timeOut) {
+            const ls = rec.lastStatus || 'Done';
+            statusCounts[ls] = (statusCounts[ls]||0) + 1;
+        } else {
+            statusCounts['In Progress'] = (statusCounts['In Progress']||0) + 1;
+        }
+    });
+    const STATUS_CHIP_COLORS = {
+        READY:'var(--success)', OOS:'var(--danger)', OOO:'var(--warning)',
+        OC:'var(--text-secondary)', 'In Progress':'var(--accent)', Done:'var(--text-muted)'
+    };
+    const statusChips = [
+        ...Object.entries(statusCounts).map(([s,n]) => ({ s, n })),
+        { s:'Pending', n:pending }
+    ].filter(x => x.n > 0).map(({ s, n }) => `
+        <div class="db-status-chip">
+            <div class="db-status-num" style="color:${STATUS_CHIP_COLORS[s]||'var(--text-secondary)'};">${n}</div>
+            <div class="db-status-lbl">${s}</div>
+        </div>`).join('');
+
+    // ── 3. Staff Productivity (today + monthly quota) ──────────────────
+    const runners = staffList.filter(s => s.role !== 'supervisor');
+    // Count rooms done today per staff (in-memory)
+    const staffToday = {};
+    allDone.forEach(([rNo, rec]) => {
+        if (rec.attendant) staffToday[rec.attendant] = (staffToday[rec.attendant]||0) + 1;
+    });
+    // Monthly count — in-memory only for now (today's session)
+    // Will equal today count until Sheet fetch is added
+    const staffRows = runners.map(s => {
+        const todayCnt  = staffToday[s.name] || 0;
+        const monthCnt  = todayCnt; // placeholder until Sheet monthly fetch
+        const quota     = s.quota  || 0;
+        const exceeded  = quota > 0 && monthCnt > quota;
+        const pct       = quota > 0 ? Math.min(Math.round(monthCnt/quota*100), 100) : null;
+
+        // Avg time per room today
+        const staffRooms = allDone.filter(([,r]) => r.attendant === s.name && r.timeIn && r.timeOut);
+        const avgMins = staffRooms.length > 0 ? (() => {
+            const total = staffRooms.reduce((sum,[,r]) => {
+                const [ih,im] = r.timeIn.split(':').map(Number);
+                const [oh,om] = r.timeOut.split(':').map(Number);
+                return sum + ((oh*60+om) - (ih*60+im));
+            }, 0);
+            return Math.round(total / staffRooms.length);
+        })() : null;
+
+        return `
+        <div class="db-staff-row">
+            <div class="db-staff-avatar" style="background:${s.color||'#444'};">${s.name[0]}</div>
+            <div class="db-staff-info">
+                <div class="db-staff-name">
+                    ${s.name}
+                    ${exceeded ? `<span class="db-quota-badge">⚠️ Exceeded</span>` : ''}
+                </div>
+                <div class="db-staff-sub">
+                    <span>Today: <b style="color:var(--accent)">${todayCnt}</b> rooms</span>
+                    ${avgMins !== null ? `<span style="color:var(--text-muted);">· avg ${avgMins}min</span>` : ''}
+                </div>
+                ${quota > 0 ? `
+                <div class="db-quota-bar-wrap">
+                    <div class="db-quota-bar-bg">
+                        <div class="db-quota-bar-fill" style="width:${pct}%;background:${exceeded?'var(--danger)':'var(--accent)'}"></div>
+                    </div>
+                    <span class="db-quota-label" style="color:${exceeded?'var(--danger)':'var(--text-muted)'};">
+                        ${monthCnt}/${quota} this month
+                    </span>
+                </div>` : `<div style="font-size:11px;color:var(--text-muted);">No quota set</div>`}
+            </div>
+        </div>`;
+    }).join('');
+
+    // ── 4. Linen Movement Totals (today) ──────────────────────────────
+    const linenKeys = ['sheet_K','duvet_K','runner_K','sheet_S','duvet_S','pillow'];
+    const linenLabels = { sheet_K:'Bed Sheet (King)', duvet_K:'Duvet Cover (King)',
+        runner_K:'Bed Runner (King)', sheet_S:'Bed Sheet (Single)',
+        duvet_S:'Duvet Cover (Single)', pillow:'Pillow Case' };
+    const towelKeys = CHECKLIST.towels;
+    const recs = allDone.map(([,r]) => r);
+
+    const sumIn  = (obj, k) => recs.reduce((s,r) => s+(Number(obj==='linen'?r.linen?.[k+'_in']:r.towels?.[k+'_in'])||0),0);
+    const sumOut = (obj, k) => recs.reduce((s,r) => s+(Number(obj==='linen'?r.linen?.[k+'_out']:r.towels?.[k+'_out'])||0),0);
+
+    const makeLinenRow = (label, inV, outV) => `
+        <div class="db-linen-row">
+            <span class="db-linen-label">${label}</span>
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+                <div class="db-linen-cell db-linen-in">
+                    <span class="db-linen-num">${inV}</span>
+                    <span class="db-linen-tag" style="color:var(--success);">IN</span>
+                </div>
+                <div class="db-linen-cell db-linen-out">
+                    <span class="db-linen-num">${outV}</span>
+                    <span class="db-linen-tag" style="color:var(--danger);">OUT</span>
+                </div>
+            </div>
+        </div>`;
+
+    const colHdrRow = `
+        <div class="db-linen-hdr">
+            <span style="flex:1;"></span>
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+                <div class="db-linen-cell"><span class="db-linen-tag" style="color:var(--success);">IN</span></div>
+                <div class="db-linen-cell"><span class="db-linen-tag" style="color:var(--danger);">OUT</span></div>
+            </div>
+        </div>`;
+
+    const linenSection = `
+        <div style="margin-bottom:6px;">
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;
+                letter-spacing:0.5px;padding:4px 0 6px;">🛏 Bed Linen</div>
+            ${colHdrRow}
+            ${linenKeys.map(k => makeLinenRow(linenLabels[k], sumIn('linen',k), sumOut('linen',k))).join('')}
+        </div>`;
+
+    const towelSection = `
+        <div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;
+                letter-spacing:0.5px;padding:4px 0 6px;margin-top:10px;">🛁 Towels</div>
+            ${colHdrRow}
+            ${towelKeys.map(k => makeLinenRow(k, sumIn('towel',k), sumOut('towel',k))).join('')}
+        </div>`;
+
+    const linenRowsHtml = linenSection + towelSection;
+
+    // ── 5. Exceptions ─────────────────────────────────────────────────
+    const exceptions = allDone.filter(([,r]) => r.lastStatus === 'OOS' || r.lastStatus === 'OOO');
+    const exHtml = exceptions.length === 0
+        ? `<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">✅ No exceptions today</div>`
+        : exceptions.map(([rNo,r]) => `
+        <div class="db-exception-row">
+            <span class="db-ex-room">${rNo}</span>
+            <span class="db-ex-status" style="color:${r.lastStatus==='OOS'?'var(--danger)':'var(--warning)'};">${r.lastStatus}</span>
+            <span class="db-ex-info">${r.attendant||'–'} · ${r.timeOut||''}</span>
+        </div>`).join('');
+
+    document.getElementById('dashboardContent').innerHTML = `
+    <div style="padding-bottom:110px;">
+
+        <!-- Bento row 1: Floor Progress (wide) + Status chips -->
+        <div class="db-bento-grid">
+
+            <!-- Floor Progress — wide -->
+            <div class="db-bento db-bento-wide">
+                <div class="db-bento-label">Floor Progress</div>
+                ${floorRows}
+            </div>
+
+            <!-- Room Status chips — tall card -->
+            <div class="db-bento db-bento-status">
+                <div class="db-bento-label">Room Status</div>
+                <div class="db-status-chips">${statusChips || '<span style="color:var(--text-muted);font-size:12px;">No rooms started</span>'}</div>
+            </div>
+
+            <!-- Linen Movement — full width -->
+            <div class="db-bento db-bento-full">
+                <div class="db-bento-label">🛏 Linen & Towel Movement</div>
+                ${linenRowsHtml}
+            </div>
+
+            <!-- Staff Today — full width -->
+            <div class="db-bento db-bento-full">
+                <div class="db-bento-label">👥 Staff Today</div>
+                ${staffRows || '<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No data yet</div>'}
+            </div>
+
+            <!-- Exceptions — full width -->
+            <div class="db-bento db-bento-full db-bento-exceptions">
+                <div class="db-bento-label">⚠️ Exceptions</div>
+                ${exHtml}
+            </div>
+
+        </div>
+    </div>`;
+}
+
+
+// =============================================
+
+function printRoomChecklist() {
+    if (!activeRoom) return;
+    const rec  = { ...modalChecklist };
+    const type = ROOM_DATA[activeRoom] || '?';
+    const beds = BED_CONFIG[type] || { K:0, S:0 };
+    const today = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+
+    const linenRows = [];
+    if (beds.K > 0) {
+        linenRows.push({ key:'sheet_K',  label:'Bed Sheet (King)' });
+        linenRows.push({ key:'duvet_K',  label:'Duvet Cover (King)' });
+        linenRows.push({ key:'runner_K', label:'Bed Runner (King)' });
+    }
+    if (beds.S > 0) {
+        linenRows.push({ key:'sheet_S',  label:`Bed Sheet (Single×${beds.S})` });
+        linenRows.push({ key:'duvet_S',  label:`Duvet Cover (Single×${beds.S})` });
+    }
+    linenRows.push({ key:'pillow', label:'Pillow Case' });
+
+    const makeLinenRow = (label, inVal, outVal) =>
+        `<tr><td>${label}</td><td>${inVal||0}</td><td>${outVal||0}</td></tr>`;
+    const makeCheckRow = (item, obj) =>
+        `<tr><td>${item}</td><td>${obj[item]?'✓':''}</td></tr>`;
+
+    const w = window.open('', '_blank', 'width=820,height=1160');
+    w.document.write(`<!DOCTYPE html><html><head><title>Room ${activeRoom} Checklist</title>
+    <style>
+        @page { size: A4; margin: 10mm 10mm 8mm 10mm; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; font-size: 8pt; color: #000; }
+        h1 { font-size: 11pt; font-weight: bold; text-align: center; letter-spacing: 1px; }
+        .sub { font-size: 8pt; text-align: center; color: #444; margin-bottom: 5px; }
+        .meta { display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid #999; margin-bottom: 4px; }
+        .meta2 { display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid #999; border-top: none; margin-bottom: 6px; }
+        .mcell { padding: 4px 6px; border-right: 1px solid #ccc; }
+        .mcell:last-child { border-right: none; }
+        .mcell .lbl { font-size: 6.5pt; font-weight: bold; text-transform: uppercase; color: #666; display: block; margin-bottom: 1px; }
+        .mcell .val { font-size: 9pt; font-weight: bold; }
+        .cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 5px; }
+        .cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        caption { font-size: 7pt; font-weight: bold; text-transform: uppercase;
+                  background: #333; color: #fff; padding: 3px 5px; text-align: left; letter-spacing: 0.5px; }
+        td, th { border: 1px solid #ccc; padding: 2.5px 5px; font-size: 7.5pt; }
+        th { background: #eee; font-size: 7pt; text-align: center; font-weight: bold; }
+        td:last-child { text-align: center; width: 28px; }
+        .remarks-box { border: 1px solid #999; padding: 5px 7px; min-height: 28px;
+                       font-size: 8pt; margin-bottom: 5px; }
+        .remarks-lbl { font-size: 6.5pt; font-weight: bold; text-transform: uppercase;
+                       color: #666; margin-bottom: 3px; }
+        .sigs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 6px; }
+        .sig { border-top: 1px solid #444; padding-top: 3px; text-align: center; font-size: 7pt; color: #444; }
+        .sig-name { font-size: 8pt; font-weight: bold; color: #000; margin-bottom: 10px; }
+    </style></head><body>
+
+    <h1>ELOPURA — DAILY ROOM CHECKLIST</h1>
+    <div class="sub">Room Attendant Report</div>
+
+    <div class="meta">
+        <div class="mcell"><span class="lbl">Date</span><span class="val">${today}</span></div>
+        <div class="mcell"><span class="lbl">Room No.</span><span class="val">${activeRoom}</span></div>
+        <div class="mcell"><span class="lbl">Room Type</span><span class="val">${ROOM_TYPE_NAMES[type]||type}</span></div>
+        <div class="mcell"><span class="lbl">Attendant</span><span class="val">${rec.attendant||'–'}</span></div>
+    </div>
+    <div class="meta2">
+        <div class="mcell"><span class="lbl">1st Status</span><span class="val">${rec.status||'–'}</span></div>
+        <div class="mcell"><span class="lbl">Last Status</span><span class="val">${rec.lastStatus||'–'}</span></div>
+        <div class="mcell"><span class="lbl">Time In</span><span class="val">${rec.timeIn||'–'}</span></div>
+        <div class="mcell"><span class="lbl">Time Out</span><span class="val">${rec.timeOut||'–'}</span></div>
+    </div>
+
+    <div class="cols3">
+        <table>
+            <caption>Bed Linen</caption>
+            <tr><th>Item</th><th>IN</th><th>OUT</th></tr>
+            ${linenRows.map(r=>makeLinenRow(r.label, rec.linen[r.key+'_in'], rec.linen[r.key+'_out'])).join('')}
+        </table>
+        <table>
+            <caption>Towels</caption>
+            <tr><th>Item</th><th>IN</th><th>OUT</th></tr>
+            ${CHECKLIST.towels.map(t=>makeLinenRow(t, rec.towels[t+'_in'], rec.towels[t+'_out'])).join('')}
+        </table>
+        <table>
+            <caption>Bathroom Amenities</caption>
+            <tr><th>Item</th><th>✓</th></tr>
+            ${CHECKLIST.bathroom.map(i=>makeCheckRow(i, rec.checklist)).join('')}
+        </table>
+    </div>
+
+    <div class="cols2">
+        <table>
+            <caption>Stationary</caption>
+            <tr><th>Item</th><th>✓</th></tr>
+            ${CHECKLIST.stationary.map(i=>makeCheckRow(i, rec.checklist)).join('')}
+        </table>
+        <table>
+            <caption>Coffee & Gank</caption>
+            <tr><th>Item</th><th>✓</th></tr>
+            ${CHECKLIST.coffee.map(i=>makeCheckRow(i, rec.checklist)).join('')}
+        </table>
+    </div>
+
+    <div class="remarks-lbl">Remarks</div>
+    <div class="remarks-box">${rec.remarks||''}</div>
+
+    <div class="sigs">
+        <div class="sig"><div class="sig-name">${rec.attendant||'_________________'}</div>Prepared by / Attendant</div>
+        <div class="sig"><div class="sig-name">&nbsp;</div>Verified by</div>
+        <div class="sig"><div class="sig-name">&nbsp;</div>Supervisor</div>
+    </div>
+
+    <script>window.onload=()=>{window.print();}<\/script>
+    </body></html>`);
+    w.document.close();
+}
+
+function printDailyChecklist() {
+    // Print the HK Daily Amenities Request/Out Form for today
+    const today     = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' });
+    const dayName   = new Date().toLocaleDateString('en-GB', { weekday:'long' });
+    const levels    = [1, 2, 3, 4];
+    const pubArea   = 'public';
+
+    // Gather requests per level
+    const getReqs = (lvl) => {
+        const key = Object.keys(requests).find(k => {
+            const r = requests[k];
+            return r.date === new Date().toISOString().slice(0,10) && String(r.level) === String(lvl);
+        });
+        return key ? requests[key] : null;
+    };
+
+    const levelRunner = { 1:'MIMIE', 2:'YANA', 3:'LINA', 4:'MIMIE', public:'IZZAT' };
+    const allLevels = [...levels, pubArea];
+
+    const makeRequestTable = (lvl) => {
+        const req = getReqs(lvl);
+        const runner = req?.runner || levelRunner[lvl] || '–';
+        const its = req?.items || [];
+        const rows = Array(8).fill(null).map((_, i) => its[i] || null);
+        return `
+        <div class="req-box">
+            <div class="req-header">LEVEL ${lvl === 'public' ? 'PUBLIC AREA' : lvl}:</div>
+            <div class="req-by">Requested By: <strong>${runner}</strong></div>
+            <table>
+                <tr><th>ITEMS</th><th style="width:70px;">AMOUNT</th><th style="width:40px;">DONE</th></tr>
+                ${rows.map(r=>`<tr>
+                    <td>${r?.name||''}</td>
+                    <td class="num">${r?.qty||''}</td>
+                    <td class="check">${r?.done?'✓':''}</td>
+                </tr>`).join('')}
+            </table>
+        </div>`;
+    };
+
+    // Water data
+    const todayKey = new Date().toISOString().slice(0,10);
+    const todayWater = water[todayKey] || {};
+    const wTotal = (todayWater.L1||0)+(todayWater.L2||0)+(todayWater.L3||0)+(todayWater.L4||0);
+
+    const w = window.open('', '_blank', 'width=900,height=700');
+    w.document.write(`<!DOCTYPE html><html><head><title>HK Daily Amenities Request Form</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; font-size: 15px; color: #111; padding: 12px; }
+        h1 { font-size: 15px; text-align:center; margin-bottom:2px; }
+        .date-row { display:flex; justify-content:center; gap:40px; font-size:15px; margin-bottom:8px; }
+        .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+        .req-box { border:1px solid #333; padding:6px; }
+        .req-header { font-weight:bold; font-size:15px; background:#eee; padding:3px 6px; margin:-6px -6px 4px; }
+        .req-by { font-size:15px; margin-bottom:4px; }
+        table { width:100%; border-collapse:collapse; }
+        td, th { border:1px solid #ccc; padding:3px 5px; font-size:15px; }
+        th { background:#f5f5f5; font-size:9px; text-align:center; }
+        .num { text-align:center; }
+        .check { text-align:center; width:30px; }
+        .water-box { border:1px solid #333; padding:6px; }
+        .water-header { font-weight:bold; font-size:15px; background:#eee; padding:3px 6px; margin:-6px -6px 4px -6px; margin-bottom:4px; }
+        .water-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; font-size:15px; }
+        .water-row { display:flex; justify-content:space-between; border:1px solid #ccc; padding:2px 5px; }
+        .footer-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; font-size:15px; }
+        .sig-box { border:1px solid #ccc; padding:4px 8px; }
+        .sig-label { font-size:9px; color:#555; }
+        @media print { body { padding:6px; } }
+    </style></head><body>
+    <h1>HK DAILY AMENITIES REQUEST / OUT FORM</h1>
+    <div class="date-row">
+        <span><strong>DATE:</strong> ${today}</span>
+        <span><strong>DAY:</strong> ${dayName}</span>
+    </div>
+
+    <div class="grid">
+        ${levels.map(l => makeRequestTable(l)).join('')}
+    </div>
+
+    <div class="grid">
+        ${makeRequestTable('public')}
+        <div class="water-box">
+            <div class="water-header">MINERAL WATER OUT:</div>
+            <table style="margin-bottom:4px;">
+                <tr><th>Location</th><th>Qty</th></tr>
+                <tr><td>Level 1</td><td class="num">${todayWater.L1||''}</td></tr>
+                <tr><td>Level 2</td><td class="num">${todayWater.L2||''}</td></tr>
+                <tr><td>Level 3</td><td class="num">${todayWater.L3||''}</td></tr>
+                <tr><td>Level 4</td><td class="num">${todayWater.L4||''}</td></tr>
+                <tr><td><strong>TOTAL</strong></td><td class="num"><strong>${wTotal||''}</strong></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-row">
+        <div class="sig-box">
+            <div class="sig-label">TOP-UP BY:</div>
+            <div style="padding:4px 0 2px;font-weight:bold;">${currentUser||''}</div>
+            <div class="sig-label">Date (time): ${today}</div>
+        </div>
+        <div class="sig-box">
+            <div class="sig-label">System Update By:</div>
+            <div style="padding:4px 0 2px;font-weight:bold;">${currentUser||''}</div>
+            <div class="sig-label">Date (time): ${today}</div>
+        </div>
+    </div>
+    <div class="footer-row" style="margin-top:4px;">
+        <div class="sig-box">
+            <div class="sig-label">Verified by:</div>
+            <div style="padding:4px 0 2px;"> </div>
+            <div class="sig-label">Date (time):</div>
+        </div>
+        <div></div>
+    </div>
+
+    <script>window.onload=()=>{window.print();}<\/script>
+    </body></html>`);
+    w.document.close();
+}
+</script>
+</body>
+</html>
