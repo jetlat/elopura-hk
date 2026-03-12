@@ -2215,8 +2215,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save the hardcoded URL so sync functions pick it up
     localStorage.setItem('eq_script_url', CFG.SCRIPT_URL);
 
-    // Load staff then possibly auto-login
-    loadStaff().then(() => {
+    // Load staff + data in parallel so items are ready by the time user logs in
+    Promise.all([loadStaff(), loadData()]).then(() => {
         if (savedUser && savedRole) {
             const staff = staffList.find(s => s.name === savedUser);
             if (staff) { loginAs(staff); return; }
@@ -2461,7 +2461,10 @@ function goToSection(name) {
     if (name === 'checklist') renderChecklistTab();
     if (name === 'staff')     renderStaffMgmt();
     if (name === 'dashboard') renderDashboard();
-    if (name === 'add')       populateItemSelect();
+    if (name === 'add') {
+        const sel = document.getElementById('formItem');
+        if (sel && sel.options.length <= 1) populateItemSelect();
+    }
 }
 
 function goHome() {
@@ -2631,8 +2634,8 @@ function renderLevels() {
         const chip    = data.runner ? miniAvatar(data.runner) : '';
 
         return `
-        <div class="level-card" data-level="${lv.key}" onclick="toggleCard('${lv.key}')">
-            <div class="level-header">
+        <div class="level-card" data-level="${lv.key}">
+            <div class="level-header" onclick="toggleCard('${lv.key}')">
                 <div class="level-info">
                     <div class="level-badge-wrap">
                         <div class="level-badge ${lv.cls}">${lv.abbr}</div>
@@ -2657,7 +2660,7 @@ function renderItemRows(level, list) {
     const isSv = currentRole === 'supervisor';
     return list.map(item => `
         <div class="item-row ${item.done?'done':''} ${isSv?'clickable':''}"
-             onclick="${isSv?`event.stopPropagation();toggleDone('${level}',${item.id})`:''}">
+             onclick="${isSv?`toggleDone('${level}',${item.id})`:''}">
             <div class="item-check ${isSv?'':'readonly'}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>
             </div>
