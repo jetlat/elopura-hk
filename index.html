@@ -2264,10 +2264,7 @@ async function loadStaff() {
         }));
     } catch (e) {
         console.warn('Staff load failed', e);
-        document.body.insertAdjacentHTML('beforeend',
-            `<div style="position:fixed;top:0;left:0;right:0;background:#ff4060;color:white;
-            padding:12px;font-size:12px;z-index:99999;word-break:break-all;">
-            ERROR: ${e.message}</div>`);
+
         staffList = DEMO_STAFF.map((s, i) => ({ ...s, color: AVATAR_COLORS[i % AVATAR_COLORS.length] }));
     }
 }
@@ -2464,6 +2461,7 @@ function goToSection(name) {
     if (name === 'checklist') renderChecklistTab();
     if (name === 'staff')     renderStaffMgmt();
     if (name === 'dashboard') renderDashboard();
+    if (name === 'add')       populateItemSelect();
 }
 
 function goHome() {
@@ -2528,23 +2526,15 @@ async function loadData() {
         const ts     = Date.now();
         const allRes = await fetch(`${CFG.SCRIPT_URL}?action=getAll&t=${ts}`, { cache: 'no-store' });
         const data   = await allRes.json();
-        console.log('getAll response:', JSON.stringify(data).substring(0, 500));
         if (data.error) throw new Error(data.error);
         items    = data.items    || [];
         requests = organizeRequests(data.requests || []);
         water    = data.water    || {};
-        // Show item count on screen
-        document.body.insertAdjacentHTML('beforeend',
-            `<div style="position:fixed;bottom:0;left:0;right:0;background:#00e096;color:#000;
-            padding:12px;font-size:12px;z-index:99999;">
-            LOADED: ${items.length} items, ${Object.keys(requests).length} levels</div>`);
+
     } catch (err) {
         console.error('getAll failed:', err);
         toast('Load failed — check connection', true);
-        document.body.insertAdjacentHTML('beforeend',
-            `<div style="position:fixed;bottom:0;left:0;right:0;background:#ff4060;color:white;
-            padding:12px;font-size:12px;z-index:99999;word-break:break-all;">
-            ITEMS ERROR: ${err.message}</div>`);
+
         const cached = localStorage.getItem('eq_requests');
         if (cached) requests = JSON.parse(cached);
         else { items = []; requests = {}; }
